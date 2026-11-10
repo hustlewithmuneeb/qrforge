@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /signin
+Disallow: /signup
+Disallow: /my-codes
+Disallow: /my-panel
+
+Sitemap: https://qrforge.vercel.app/sitemap.xml

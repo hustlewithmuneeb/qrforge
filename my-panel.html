@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Panel — Tracked Codes & Scans — QRForge</title>
+<meta name="description" content="Manage your tracked QR codes: change a destination without reprinting and see scan counts, platforms and rough locations.">
+<link rel="canonical" href="https://qrforge.vercel.app/my-panel">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111'/%3E%3Crect x='10' y='10' width='18' height='18' rx='3' fill='none' stroke='white' stroke-width='4'/%3E%3Crect x='16' y='16' width='6' height='6' fill='white'/%3E%3Crect x='36' y='10' width='18' height='18' rx='3' fill='none' stroke='white' stroke-width='4'/%3E%3Crect x='42' y='16' width='6' height='6' fill='white'/%3E%3Crect x='10' y='36' width='18' height='18' rx='3' fill='none' stroke='white' stroke-width='4'/%3E%3Crect x='16' y='42' width='6' height='6' fill='white'/%3E%3Crect x='38' y='38' width='7' height='7' fill='white'/%3E%3Crect x='48' y='38' width='7' height='7' fill='white'/%3E%3Crect x='38' y='48' width='7' height='7' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--black:#111111;--ink:#1a1a1a;--dark:#2b2b2b;--mid:#6b6b6b;--grey:#9a9a9a;--line:#e4e4e4;--soft:#f4f4f4;--soft2:#ececec;--white:#ffffff;--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:var(--white);line-height:1.55}
+a{color:var(--black)}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+/* Header */
+header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:18px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:22px;color:var(--black);letter-spacing:-.02em}
+.logo svg{width:36px;height:36px;flex:none}
+nav.mainnav{display:flex;gap:4px;margin-left:8px}
+nav.mainnav>a, .dropbtn{padding:9px 13px;border-radius:10px;text-decoration:none;color:var(--dark);font-weight:600;font-size:15px;background:none;border:none}
+nav.mainnav>a:hover,.dropbtn:hover{background:var(--soft)}
+.dropdown{position:relative}
+.dropmenu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.14);padding:10px;min-width:250px;z-index:70}
+.dropdown:hover .dropmenu,.dropdown:focus-within .dropmenu{display:block}
+.dropmenu a{display:flex;justify-content:space-between;gap:14px;padding:9px 11px;border-radius:9px;text-decoration:none;color:var(--dark);font-weight:600;font-size:14px}
+.dropmenu a:hover{background:var(--soft)}
+.dropmenu a span{color:var(--grey);font-weight:500;font-size:12px}
+.hcta{margin-left:auto;display:flex;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--black);background:var(--black);color:#fff;padding:10px 18px;border-radius:11px;font-weight:700;font-size:15px;text-decoration:none;transition:.15s}
+.btn:hover{background:var(--dark)}
+.btn.ghost{background:#fff;color:var(--black)}
+.btn.ghost:hover{background:var(--soft)}
+.btn.light{border-color:var(--line);background:#fff;color:var(--ink)}
+.btn.sm{padding:8px 13px;font-size:14px}
+#burger{display:none;background:none;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:18px}
+#mobileMenu{display:none;border-top:1px solid var(--line);padding:12px 20px 18px;background:#fff}
+#mobileMenu a{display:block;padding:9px 4px;text-decoration:none;font-weight:600;color:var(--dark);border-bottom:1px solid var(--soft)}
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#fafafa,#f1f1f1);border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(#e7e7e7 1px,transparent 1px),linear-gradient(90deg,#e7e7e7 1px,transparent 1px);background-size:34px 34px;opacity:.55;animation:gridmove 22s linear infinite}
+@keyframes gridmove{from{background-position:0 0,0 0}to{background-position:34px 34px,34px 34px}}
+.hero .wrap{position:relative;padding:52px 20px 30px;text-align:center}
+.hero h1{font-size:clamp(32px,5vw,54px);line-height:1.08;letter-spacing:-.03em;font-weight:800;color:var(--black)}
+.hero h1 .u{background:var(--black);color:#fff;padding:0 12px;border-radius:10px;display:inline-block}
+.hero p.sub{max-width:680px;margin:16px auto 0;color:var(--mid);font-size:18px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;color:var(--dark)}
+.stat b{color:var(--black)}
+/* Studio */
+.studio{position:relative;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.10);margin:34px auto 56px;overflow:hidden;text-align:left}
+.studio-grid{display:grid;grid-template-columns:1.15fr .85fr;min-height:520px}
+.panel{padding:26px}
+.panel.left{border-right:1px solid var(--line)}
+.panel.right{background:var(--soft);display:flex;flex-direction:column;align-items:center}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13.5px;color:var(--dark)}
+.tab.active{background:var(--black);color:#fff;border-color:var(--black)}
+.typeform{display:none}
+.typeform.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px;color:var(--dark);letter-spacing:.01em}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--black)}
+.field textarea{resize:vertical;min-height:74px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:12.5px;color:var(--grey);margin-top:5px}
+.payload-box{background:var(--black);color:#e8e8e8;border-radius:12px;padding:12px 14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;word-break:break-all;white-space:pre-wrap;max-height:130px;overflow:auto}
+h3.sec{font-size:15px;font-weight:800;margin:22px 0 10px;color:var(--black);text-transform:uppercase;letter-spacing:.06em}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13.5px}
+.seg button.active{background:var(--black);color:#fff;border-color:var(--black)}
+.colors{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.colors label{font-weight:700;font-size:13px;color:var(--dark);display:block;margin-bottom:6px}
+.colorin{display:flex;gap:8px;align-items:center}
+.colorin input[type=color]{width:46px;height:40px;border:1.5px solid var(--line);border-radius:10px;padding:2px;background:#fff;cursor:pointer}
+.colorin input[type=text]{flex:1;border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;text-transform:uppercase}
+.templates{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tpl{border:1.5px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;background:#fff;font-weight:700;font-size:12.5px}
+.tpl:hover{border-color:var(--black)}
+.tpl .sw{display:flex;justify-content:center;gap:4px;margin-bottom:7px}
+.tpl .sw i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.15)}
+input[type=range]{width:100%;accent-color:var(--black)}
+.contrast{border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;margin-top:14px;border:1.5px solid var(--line);background:#fff}
+.contrast.pass{border-color:var(--black);background:var(--soft)}
+.contrast.warn{border-color:#111111;border-style:dashed;background:#ececec;color:#1a1a1a}
+#qrCanvas{width:min(320px,80vw);height:auto;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.preview-note{color:var(--mid);font-size:13px;text-align:center;margin-top:10px;max-width:320px}
+.dlgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin-top:18px}
+.dlgrid .btn{justify-content:center}
+.palette{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.palette button{width:38px;height:38px;border-radius:10px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.logo-thumb{display:flex;align-items:center;gap:12px;margin-top:10px}
+.logo-thumb img{width:52px;height:52px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff}
+/* Sections */
+section.block{padding:64px 0}
+section.block.alt{background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+h2.title{font-size:clamp(26px,3.6vw,38px);letter-spacing:-.02em;font-weight:800;color:var(--black);text-align:center}
+p.lead{text-align:center;color:var(--mid);max-width:640px;margin:12px auto 34px;font-size:17px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card h3{font-size:17px;margin-bottom:8px;color:var(--black)}
+.card p{color:var(--mid);font-size:14.5px}
+.card .num{width:38px;height:38px;border-radius:11px;background:var(--black);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px}
+.typecard{cursor:pointer;transition:.15s;text-align:left;width:100%;font-family:inherit}
+.typecard:hover{border-color:var(--black);transform:translateY(-2px)}
+.typecard .ic{font-size:24px;margin-bottom:8px}
+/* FAQ */
+.faq{max-width:820px;margin:0 auto}
+.faq details{border:1px solid var(--line);border-radius:13px;margin-bottom:10px;background:#fff}
+.faq summary{padding:16px 18px;font-weight:700;cursor:pointer;list-style:none;color:var(--black)}
+.faq summary::-webkit-details-marker{display:none}
+.faq details p{padding:0 18px 16px;color:var(--mid);font-size:15px}
+/* Tables / lists */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;word-break:break-all}
+th{background:var(--soft);font-weight:800}
+.saved-item{border:1px solid var(--line);border-radius:13px;padding:14px 16px;display:flex;gap:12px;align-items:center;background:#fff;margin-bottom:10px;flex-wrap:wrap}
+.saved-item .meta{flex:1;min-width:180px}
+.saved-item .meta b{display:block}
+.saved-item .meta small{color:var(--grey)}
+.dropzone{border:2px dashed var(--grey);border-radius:16px;padding:28px;text-align:center;background:#fff}
+.dropzone input{margin-top:10px}
+#bulkGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-top:18px}
+.bulkcell{background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
+.bulkcell canvas{width:130px;height:130px}
+.bulkcell div{font-size:13px;font-weight:700;margin-top:8px;word-break:break-all}
+.scanresult{background:var(--black);color:#fff;border-radius:13px;padding:16px;word-break:break-all}
+/* Frames gallery */
+.framegallery{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.framecard{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 4px 7px;font-weight:700;font-size:11.5px;color:var(--dark);display:flex;flex-direction:column;align-items:center;gap:6px}
+.framecard:hover{border-color:var(--grey)}
+.framecard.active{border-color:var(--black);background:var(--soft);color:var(--black)}
+.fc-stage{height:72px;display:flex;align-items:center;justify-content:center}
+.fc-col{display:flex;flex-direction:column;align-items:center}
+.fc-qr{width:30px;height:30px;flex:none;background-color:#fff;background-image:repeating-linear-gradient(0deg,#111 0 4px,transparent 4px 8px),repeating-linear-gradient(90deg,#111 0 4px,transparent 4px 8px)}
+.fc-banner{background:var(--black);color:#fff;font-size:6.5px;font-weight:800;letter-spacing:.08em;text-align:center;padding:2.5px 0;width:46px}
+.fc-label{background:#fff;color:var(--black);border:1.5px solid var(--black);border-top:none;font-size:6.5px;font-weight:800;letter-spacing:.08em;text-align:center;padding:2px 0;width:42px}
+.fc-box{border:2px solid var(--black);padding:3px;display:flex}
+.fc-box.double{outline:2px solid var(--black);outline-offset:2.5px;margin:3px}
+.fc-box.rounded{border-width:3px;border-radius:9px}
+.fc-box.corners{border:none;position:relative;padding:5px}
+.fc-box.corners i{position:absolute;width:9px;height:9px;border:0 solid var(--black)}
+.fc-box.corners i.tl{top:0;left:0;border-top-width:3px;border-left-width:3px}
+.fc-box.corners i.tr{top:0;right:0;border-top-width:3px;border-right-width:3px}
+.fc-box.corners i.bl{bottom:0;left:0;border-bottom-width:3px;border-left-width:3px}
+.fc-box.corners i.br{bottom:0;right:0;border-bottom-width:3px;border-right-width:3px}
+.fc-box.bubble{border-radius:6px;position:relative}
+.fc-tail{width:9px;height:9px;background:#fff;border-right:2px solid var(--black);border-bottom:2px solid var(--black);transform:rotate(45deg);margin-top:-6px}
+.fc-line{width:52px;height:2px;background:var(--black)}
+.fc-cap{font-size:6.5px;font-weight:800;letter-spacing:.08em;color:var(--black);text-align:center}
+.scancard{border:1.5px solid var(--line);border-radius:13px;padding:14px;background:#fff;margin-top:12px}
+
+/* Accounts, guest gate, tracked codes, panel */
+.usage-pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--black);color:var(--black);border-radius:999px;padding:7px 14px;font-weight:800;font-size:13px;margin-bottom:14px}
+.usage-pill.account{background:var(--black);color:#fff}
+.tracked-box{border:1.5px solid var(--line);border-radius:13px;padding:14px;margin-top:16px;background:var(--soft)}
+.tracked-box.on{border-color:var(--black);background:#fff}
+.switch-row{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:15px}
+.switch-row input{width:19px;height:19px;accent-color:var(--black);flex:none;margin-top:2px}
+.tracked-warn{width:100%;max-width:340px;margin-top:12px;border:1.5px dashed var(--black);background:#ececec;border-radius:12px;padding:11px 13px;font-size:13px;font-weight:600;text-align:left}
+.ack-row{display:flex;gap:9px;align-items:flex-start;width:100%;max-width:340px;margin-top:12px;font-size:13.5px;font-weight:600;text-align:left;cursor:pointer}
+.ack-row input{margin-top:3px;width:17px;height:17px;accent-color:var(--black);flex:none}
+.dlgrid .btn[disabled]{opacity:.45;cursor:not-allowed}
+.userchip{font-weight:800;font-size:14.5px;color:var(--black);white-space:nowrap}
+.authtabs{display:flex;gap:8px;margin:14px 0}
+.authtabs button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:10px;font-weight:800;font-size:15px;font-family:inherit;cursor:pointer}
+.authtabs button.active{background:var(--black);color:#fff;border-color:var(--black)}
+.auth-msg{border:1.5px solid var(--black);background:var(--soft);border-radius:11px;padding:11px 13px;font-weight:700;color:var(--ink)}
+.auth-err{color:var(--ink);font-weight:700;font-size:14px;border-left:4px solid var(--black);padding:6px 10px;background:var(--soft);display:none;margin-bottom:10px}
+.auth-or{text-align:center;color:var(--grey);font-weight:700;margin:14px 0 10px;font-size:13px}
+.panel-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.pstat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;text-align:center}
+.pstat .n{font-size:30px;font-weight:800;color:var(--black);letter-spacing:-.02em}
+.pstat .l{color:var(--mid);font-size:13.5px;font-weight:700}
+.panel-banner{border:1.5px dashed var(--black);background:#fff;border-radius:13px;padding:14px 16px;font-weight:600;margin-bottom:20px;text-align:center}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+.tcard h3{color:var(--black);font-size:17px;margin-bottom:4px}
+.tcard .short{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+.tcard .destrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.tcard .destrow input{flex:1;min-width:200px;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px}
+.pbar-row{display:grid;grid-template-columns:64px 1fr 30px;gap:10px;align-items:center;font-size:13px;font-weight:700;margin-top:5px}
+.pbar{background:var(--soft2);border-radius:99px;height:9px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--black)}
+.scanlog{margin-top:10px}
+.scanlog summary{cursor:pointer;font-weight:800;color:var(--black)}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px}
+@media(max-width:920px){.panel-stats{grid-template-columns:1fr 1fr}.tgrid{grid-template-columns:1fr}}
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 14px}
+.modal.open{display:flex}
+.modal .box{background:#fff;border-radius:18px;max-width:720px;width:100%;padding:30px}
+.modal .box h2{margin-bottom:12px;color:var(--black)}
+.modal .box p{color:var(--mid);margin-bottom:10px;font-size:15px}
+.modal .close{float:right;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-weight:700}
+/* Pages (hash routing) */
+.page{display:none}
+.page.active{display:block;animation:fade .2s ease}
+nav.mainnav>a.active{background:var(--black);color:#fff}
+#mobileMenu a.active{color:var(--black);text-decoration:underline}
+#usagePill{margin-bottom:0}
+.authwrap{max-width:520px;margin:0 auto;padding:54px 20px 72px}
+.authcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 18px 44px rgba(0,0,0,.08)}
+.authcard h2{color:var(--black);margin-bottom:6px}
+.authcard .sub2{color:var(--mid);font-size:15px;margin-bottom:14px}
+.authswitch{text-align:center;margin-top:16px;color:var(--mid);font-size:14.5px}
+@media print{.page{display:none!important}.page.active{display:block!important}}
+@media(max-width:560px){.usage-pill{padding:5px 10px;font-size:11.5px}}
+footer{background:var(--black);color:#cfcfcf;padding:52px 0 30px;margin-top:0}
+footer .logo{color:#fff}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:26px}
+footer h4{color:#fff;margin-bottom:12px;font-size:15px}
+footer a{color:#cfcfcf;text-decoration:none;display:block;padding:4px 0;font-size:14.5px}
+footer a:hover{color:#fff}
+.fbottom{border-top:1px solid #333;margin-top:34px;padding-top:18px;font-size:13.5px;color:#999;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--black);color:#fff;padding:12px 20px;border-radius:12px;font-weight:700;z-index:120;transition:.25s;box-shadow:0 14px 34px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:920px){.studio-grid{grid-template-columns:1fr}.panel.left{border-right:none;border-bottom:1px solid var(--line)}.grid3,.grid4{grid-template-columns:1fr 1fr}.fgrid{grid-template-columns:1fr 1fr}nav.mainnav{display:none}#burger{display:block}.hcta .btn.ghost{display:none}}
+@media(max-width:560px){.grid3,.grid4{grid-template-columns:1fr}.templates{grid-template-columns:repeat(2,1fr)}.colors{grid-template-columns:1fr}.row2{grid-template-columns:1fr}.framegallery{grid-template-columns:repeat(3,1fr)}}
+@media print{header,footer,.hero,section.block:not(#bulkPrintArea),.no-print{display:none!important}#bulkGrid{grid-template-columns:repeat(3,1fr)}}
+/* Header fix (v5.1) + usage-chip move & Blog nav (v5.2): one-row desktop
+   header, collapse before anything wraps. The guest usage pill is OUT of
+   the header entirely (v5.2) — the counter now lives as #usageChip inside
+   the Create studio, above the download buttons. Nav is tightened a touch
+   more so the extra Blog item still fits one row at 1280px. */
+.hbar{height:64px;gap:12px;flex-wrap:nowrap}
+.logo{flex:none;font-size:20px}
+.logo svg{width:32px;height:32px}
+nav.mainnav{gap:1px;margin-left:2px;flex:none}
+nav.mainnav>a,.dropbtn{padding:8px 9px;font-size:13.5px;white-space:nowrap}
+.hcta{gap:8px;flex:none}
+#authArea{flex:none;white-space:nowrap}
+#authArea .btn{white-space:nowrap}
+.userchip{max-width:170px;overflow:hidden;text-overflow:ellipsis}
+#burger{flex:none}
+.usage-chip{width:100%;max-width:340px;margin-top:16px;padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font-size:13px;font-weight:600;color:var(--dark);text-align:center;line-height:1.45}
+.usage-chip a{color:var(--black);font-weight:800;text-decoration:underline}
+.usage-chip.account{background:var(--black);border-color:var(--black);color:#fff}
+@media(max-width:1100px){nav.mainnav{display:none}#burger{display:block}.hcta .btn.ghost{display:none}}
+@media(max-width:700px){#authArea{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hbar">
+    <a class="logo" href="/" aria-label="QRForge home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="13" fill="#111"/><rect x="10" y="10" width="18" height="18" rx="3" fill="none" stroke="#fff" stroke-width="4"/><rect x="16.5" y="16.5" width="5" height="5" fill="#fff"/><rect x="36" y="10" width="18" height="18" rx="3" fill="none" stroke="#fff" stroke-width="4"/><rect x="42.5" y="16.5" width="5" height="5" fill="#fff"/><rect x="10" y="36" width="18" height="18" rx="3" fill="none" stroke="#fff" stroke-width="4"/><rect x="16.5" y="42.5" width="5" height="5" fill="#fff"/><rect x="37" y="37" width="7" height="7" fill="#fff"/><rect x="48" y="37" width="7" height="7" fill="#fff"/><rect x="37" y="48" width="7" height="7" fill="#fff"/></svg>
+      QRForge
+    </a>
+    <nav class="mainnav" aria-label="Main">
+      <a href="/" data-nav="create">Create</a>
+      <div class="dropdown">
+        <button class="dropbtn" type="button">QR Types ▾</button>
+        <div class="dropmenu" id="typeDrop"></div>
+      </div>
+      <a href="/scan" data-nav="scan">Scan</a>
+      <a href="/bulk" data-nav="bulk">Bulk</a>
+      <a href="/my-codes" data-nav="codes">My Codes</a>
+      <a href="/my-panel" data-nav="panel">My Panel</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog" data-nav="blog">Blog</a>
+    </nav>
+    <div class="hcta">
+      <span id="authArea" style="display:flex;gap:8px;align-items:center"><button class="btn ghost sm" type="button" id="signInBtn">Sign In</button><button class="btn sm" type="button" id="signUpBtn">Sign Up</button></span>
+      <button id="burger" type="button" aria-label="Menu">☰</button>
+    </div>
+  </div>
+  <div id="mobileMenu">
+    <a href="/" data-nav="create">Create QR</a><a href="/scan" data-nav="scan">QR Scanner</a><a href="/bulk" data-nav="bulk">Bulk QR Codes</a><a href="/my-codes" data-nav="codes">My Codes</a><a href="/my-panel" data-nav="panel">My Panel</a><a href="/signin" data-nav="signin">Sign In</a><a href="/signup" data-nav="signup">Sign Up</a><a href="/#faq">FAQ</a><a href="/blog" data-nav="blog">Blog</a>
+  </div>
+</header>
+
+<main id="appMain">
+<div class="page" id="page-create" data-page="create">
+<div class="hero" id="top">
+  <div class="wrap">
+    <h1>Create QR codes that <span class="u">actually scan</span> — free, forever.</h1>
+    <p class="sub">Design branded QR codes with your logo, colours and frames. Download print-ready PNG, JPG, SVG and PDF. Your first 10 codes need no account at all — no watermark, ever.</p>
+    <div class="stats">
+      <div class="stat">✓ <b>First 10 codes free</b> — no signup</div>
+      <div class="stat">✓ <b>No watermark</b></div>
+      <div class="stat">✓ <b>Never expires</b> — static QR</div>
+      <div class="stat">✓ <b>Works offline</b></div>
+      <div class="stat">✓ <b>12 QR types</b></div>
+    </div>
+
+    <!-- STUDIO -->
+    <div class="studio" id="studio">
+      <div class="studio-grid">
+        <div class="panel left">
+          <div class="tabs" id="typeTabs" role="tablist"></div>
+          <div id="typeForms"></div>
+          <h3 class="sec">Live payload</h3>
+          <div class="payload-box" id="payloadPreview">—</div>
+          <div id="trackedWrap" style="display:none">
+            <div class="tracked-box" id="trackedBox">
+              <label class="switch-row"><input type="checkbox" id="trackedToggle"> <span><b>Tracked QR (dynamic)</b> — editable destination + scan counts in My Panel</span></label>
+              <div class="hint">The QR points to a short tracking link instead of your destination directly, so the destination can be changed later and scans can be counted. That needs the free cloud connection (see FAQ) — until it is switched on, tracked codes are registered in your panel but their links do not open yet.</div>
+              <div class="field" style="margin-top:10px;margin-bottom:0"><label for="trackedName">Tracked code name (shows in My Panel)</label><input type="text" id="trackedName" placeholder="e.g. Shop window poster"></div>
+            </div>
+          </div>
+
+          <h3 class="sec">Style</h3>
+          <div class="field"><label>Module style</label><div class="seg" id="moduleSeg">
+            <button type="button" data-v="square" class="active">Square</button><button type="button" data-v="rounded">Rounded</button><button type="button" data-v="dots">Dots</button></div></div>
+          <div class="field"><label>Corner eye style</label><div class="seg" id="eyeSeg">
+            <button type="button" data-v="square" class="active">Square</button><button type="button" data-v="rounded">Rounded</button><button type="button" data-v="circle">Circle</button></div></div>
+          <div class="colors">
+            <div><label for="fgColor">QR colour</label><div class="colorin"><input type="color" id="fgColor" value="#111111"><input type="text" id="fgText" value="#111111" maxlength="7"></div></div>
+            <div><label for="bgColor">Background</label><div class="colorin"><input type="color" id="bgColor" value="#ffffff"><input type="text" id="bgText" value="#FFFFFF" maxlength="7"></div></div>
+            <div><label for="eyeColor">Eye colour</label><div class="colorin"><input type="color" id="eyeColor" value="#111111"><input type="text" id="eyeText" value="#111111" maxlength="7"></div></div>
+          </div>
+          <div class="contrast" id="contrastBox">Contrast: —</div>
+
+          <h3 class="sec">Templates — one click</h3>
+          <div class="templates" id="templates"></div>
+
+          <h3 class="sec">Frame</h3>
+          <div class="framegallery" id="frameGallery"></div>
+          <div class="field" style="margin-top:14px"><label for="frameText">Frame text — used by the banner, label, bubble and lines frames</label>
+            <input type="text" id="frameText" value="SCAN ME" maxlength="40">
+            <div class="seg" id="frameTextPresets" style="margin-top:8px"></div>
+            <div class="hint">Pick a frame above, then make the text yours — it appears in the preview and in every download (PNG, JPG, SVG, PDF).</div></div>
+
+          <div class="row2" style="margin-top:16px">
+            <div class="field"><label for="eccSel">Error correction</label>
+              <select id="eccSel"><option value="L">L — ~7% damage</option><option value="M" selected>M — ~15% damage</option><option value="Q">Q — ~25% damage</option><option value="H">H — ~30% (best with logo)</option></select>
+              <div class="hint">Higher = still scans when partly covered or damaged.</div></div>
+            <div class="field"><label for="sizeSel">Export size</label>
+              <select id="sizeSel"><option value="512">512 px</option><option value="1024" selected>1024 px</option><option value="2048">2048 px</option><option value="4096">4096 px (print)</option></select></div>
+          </div>
+          <div class="field"><label for="marginRange">Quiet zone / margin: <span id="marginVal">4</span> modules</label>
+            <input type="range" id="marginRange" min="0" max="10" step="1" value="4">
+            <div class="hint">Keep at least 4 modules of clear space — scanners need it.</div></div>
+
+          <h3 class="sec">Logo &amp; brand</h3>
+          <div class="field"><label for="logoInput">Upload your logo (stays on your device)</label>
+            <input type="file" id="logoInput" accept="image/*">
+            <div class="logo-thumb" id="logoThumb" style="display:none"><img id="logoImgPreview" alt="Your logo"><button class="btn light sm" type="button" id="removeLogo">Remove logo</button></div>
+            <div class="hint">Adding a logo switches error correction to H automatically. Brand Sync reads colours from your logo below.</div></div>
+          <div id="paletteWrap" style="display:none"><label style="font-weight:700;font-size:13px;color:var(--dark)">Brand Sync — colours found in your logo (click one to use it as QR colour)</label>
+            <div class="palette" id="palette"></div></div>
+
+          <h3 class="sec">Upload &amp; scan a QR</h3>
+          <div class="field"><label for="studioScanInput">Upload any QR code image (photo or screenshot)</label>
+            <input type="file" id="studioScanInput" accept="image/*">
+            <div class="hint">Decoded on your device — nothing is uploaded. Found a code you like? Press <b>Recreate this QR</b> in the result to load its content into the studio, then add your logo, style and frame and download a fresh copy. Tip: after adding a logo, use the <b>Test scan</b> button next to the preview to check your own code still reads correctly.</div></div>
+          <div id="studioScanOut"></div>
+        </div>
+
+        <div class="panel right">
+          <canvas id="qrCanvas" width="640" height="640" aria-label="QR code preview"></canvas>
+          <p class="preview-note">Live preview — it updates as you type. Always test-scan with your phone before printing in bulk.</p>
+          <div class="tracked-warn" id="trackedWarn" style="display:none">⚠ <b>Tracking is not connected yet</b> — this code will open only after the free cloud setup (one time). For printing today, use a Static QR.</div>
+          <label class="ack-row" id="trackedAckWrap" style="display:none"><input type="checkbox" id="trackedAck"> <span>I understand — tracking starts after cloud connection</span></label>
+          <div class="usage-chip" id="usageChip">Guest · 0 of 10 free codes used — <a href="/signup">Sign up free</a> for unlimited</div>
+          <div class="dlgrid">
+            <button class="btn" type="button" id="dlPng">⬇ PNG</button>
+            <button class="btn ghost" type="button" id="dlJpg">⬇ JPG</button>
+            <button class="btn ghost" type="button" id="dlSvg">⬇ SVG</button>
+            <button class="btn ghost" type="button" id="dlPdf">⬇ PDF</button>
+          </div>
+          <div style="width:100%;max-width:340px;margin-top:14px">
+            <button class="btn ghost" type="button" id="testScanBtn" style="width:100%;justify-content:center">✓ Test scan this QR</button>
+            <div id="testScanOut" style="margin-top:10px;text-align:left"></div>
+            <div class="hint" style="text-align:left">Run this check after adding a logo: it decodes the QR area of your current design (styles + logo, no frame) in the browser and compares it with your content. The first test needs internet once, to load the decoder — your QR is never uploaded anywhere.</div>
+          </div>
+          <div style="width:100%;max-width:340px;margin-top:14px">
+            <div class="field"><label for="saveName">Save this design</label>
+              <div style="display:flex;gap:8px"><input type="text" id="saveName" placeholder="e.g. Shop menu QR" style="flex:1;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px"><button class="btn sm" type="button" id="saveBtn">Save</button></div>
+              <div class="hint">Saved in this browser (localStorage) — under your account if you are signed in, or in the guest list if you are not. Saving counts as one of a guest's 10 free codes; accounts are unlimited.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPES -->
+<section class="block" id="types">
+  <div class="wrap">
+    <h2 class="title">12 QR code types</h2>
+    <p class="lead">Pick a type and the studio opens with the right form and the correct, standards-based payload.</p>
+    <div class="grid4" id="typeGrid"></div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="block alt">
+  <div class="wrap">
+    <h2 class="title">How it works</h2>
+    <p class="lead">Three steps. Under a minute.</p>
+    <div class="grid3">
+      <div class="card"><div class="num">1</div><h3>Choose a type &amp; add content</h3><p>URL, Wi-Fi, contact card, event, menu, review link and more — each with its own proper form.</p></div>
+      <div class="card"><div class="num">2</div><h3>Style it &amp; check contrast</h3><p>Colours, dots, eyes, frames, templates and your logo — with a live scan-safety contrast check.</p></div>
+      <div class="card"><div class="num">3</div><h3>Download &amp; print</h3><p>PNG or JPG up to 4096px, true-vector SVG, or a one-page PDF. Then test-scan before you print.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block" id="features">
+  <div class="wrap">
+    <h2 class="title">Built for real-world printing</h2>
+    <p class="lead">The details that decide whether a QR code scans on a rainy poster, a curved bottle or a glossy menu.</p>
+    <div class="grid3">
+      <div class="card"><h3>Logo-safe by default</h3><p>Your logo sits in a clean white padded box and error correction jumps to H, so the code still scans with the centre covered.</p></div>
+      <div class="card"><h3>Contrast checker</h3><p>Live WCAG contrast ratio between QR and background. Below 3:1 we warn you before you waste a print run.</p></div>
+      <div class="card"><h3>True vector SVG</h3><p>SVG exports are built module-by-module from the QR matrix — infinitely scalable for signage and packaging.</p></div>
+      <div class="card"><h3>Brand Sync (lite)</h3><p>Upload a logo and we sample its dominant colours. One click applies a suitable dark brand colour to your QR.</p></div>
+      <div class="card"><h3>Private by design</h3><p>Generation, scanning, bulk and saved codes all happen in your browser. Your data never leaves your device.</p></div>
+      <div class="card"><h3>Static = forever</h3><p>A static QR encodes the content itself. No server, no subscription, no expiry — it scans as long as it is printed.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="block alt">
+  <div class="wrap">
+    <h2 class="title">Popular use cases</h2>
+    <p class="lead">Tap any use case to open the studio with the right type selected.</p>
+    <div class="grid3" id="useCases"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="block alt" id="faq">
+  <div class="wrap">
+    <h2 class="title">Frequently asked questions</h2>
+    <p class="lead">Straight answers — including the honest limits of a free static generator.</p>
+    <div class="faq">
+      <details><summary>Are QRForge codes really free, with no watermark?</summary><p>Yes. Generation and all four export formats (PNG, JPG, SVG, PDF) are free, with no watermark and no signup. The tool runs entirely in your browser.</p></details>
+      <details><summary>Do these QR codes expire?</summary><p>No. QRForge creates <b>static</b> QR codes: the content is encoded directly in the pattern, so the code works forever as long as it is printed and scannable. What can change is the destination itself — for example, if your website URL stops working, the QR still points to it.</p></details>
+      <details><summary>Static vs dynamic QR codes — what is the difference?</summary><p>A static QR encodes the final content (your URL, Wi-Fi password, contact). A <b>dynamic</b> QR encodes a short redirect link on a company's server, so the destination can be edited later and scans can be tracked. That requires a small redirect service on the internet. QRForge offers both: turn on <b>Tracked QR</b> in the studio for URL, PDF/Menu and Google Review codes. Tracked codes are registered in your panel straight away, but the redirect and scan counting only start once the site owner switches on the free cloud connection (a one-time setup) — until then, print static codes for anything urgent.</p></details>
+      <details><summary>What size should I print a QR code?</summary><p>At least 2 × 2 cm (about 0.8 in) for close-range scanning, and bigger the further away the scanner will be — a rough rule is print width ≈ scanning distance ÷ 10. Use the 2048px or 4096px export (or SVG) for large prints so modules stay sharp.</p></details>
+      <details><summary>What is the quiet zone and why does it matter?</summary><p>The quiet zone is the clear margin around the QR pattern. Scanners use it to find the code's edges. Keep at least 4 modules of empty space (QRForge defaults to 4) and never place text, logos or page edges inside it.</p></details>
+      <details><summary>Can I put my logo in the middle?</summary><p>Yes. QRForge embeds your logo in a white padded box and automatically raises error correction to H (~30%), which is designed to tolerate a covered centre. Keep the logo modest in size and always test-scan.</p></details>
+      <details><summary>Why did my coloured QR stop scanning?</summary><p>Usually low contrast: the QR colour is too light against the background. QRForge shows a live contrast ratio — aim for 4.5:1 or higher, and never invert a QR (light modules on a dark background) unless you have tested it, as many scanners struggle with inverted codes.</p></details>
+      <details><summary>What do the frames do, and does the frame text export too?</summary><p>The frames gallery adds a border or a labelled banner around your code — classic, double-line, rounded, corner brackets, black banners (top or bottom), a bordered label strip, a speech-bubble frame, or divider lines. Edit the frame text (or tap a preset like SCAN FOR MENU or LEAVE A REVIEW) and it is drawn into the live preview and into every export: PNG, JPG, true-vector SVG (the text is a real SVG text element) and PDF. Keep frame text short so it stays large and readable.</p></details>
+      <details><summary>How do I know my QR still scans after adding a logo?</summary><p>Press <b>Test scan this QR</b> next to the preview. QRForge re-decodes your current design — styles and logo included — right in your browser and tells you whether it reads back exactly. If it fails, raise the contrast, keep error correction on H, shrink or remove the logo, or switch back to square modules (the most decoder-friendly style). You can also upload any QR image in the studio's <b>Upload &amp; scan</b> card to read it — and recreate it as your own design.</p></details>
+      <details><summary>Is my data uploaded anywhere?</summary><p>No. QR generation, logo colour sampling, image scanning, CSV bulk generation and saved codes all run locally in your browser. Closing this page loses nothing except unsaved work; saved codes live in your browser's localStorage.</p></details>
+      <details><summary>How does the bulk generator work?</summary><p>Upload a CSV with the headers name,destination. QRForge previews the rows, renders one QR per row (up to 100 in this client-side version), and lets you download the PNGs or print the sheet. Bulk generation is not counted in the guest 10-free-codes limit.</p></details>
+      <details><summary>Why are the first 10 codes free — and what happens at 10?</summary><p>So you can try everything properly: as a guest you can create 10 codes free (a download or a save counts as one code). When you reach 10, we ask you to create a free account to continue — accounts are free and unlimited. It keeps the tool sustainable without putting a watermark on your codes or charging for downloads. Bulk CSV generation is not counted in the 10.</p></details>
+      <details><summary>What is a tracked (dynamic) QR code?</summary><p>Instead of encoding your destination directly, the QR encodes a short tracking link. Whoever scans it is forwarded to your destination, and the scan is recorded. Because the link stays the same, you can change the destination later in My Panel without reprinting, and you can see scan counts, platforms and rough locations. Static codes cannot do this — but they also never depend on any server.</p></details>
+      <details><summary>Why does tracking need the free cloud connection?</summary><p>A printed QR can only open a tracking link if something on the internet answers that link, forwards the visitor and writes the scan down — that "something" is a small free cloud backend (Supabase, free plan, no card). It is a one-time setup by the site owner; until it is switched on, tracked codes are registered in your panel with 0 scans and are clearly marked as not live yet. We label this honestly instead of pretending tracking works when it cannot.</p></details>
+      <details><summary>What does a scan record — and what does it not record?</summary><p>Each scan records only: the time, the platform and rough device type (for example iOS / Android / desktop, phone or tablet), and the rough country and city from the network connection. It does <b>not</b> record who the person is — no name, no email, no phone number, no exact address and no precise GPS location.</p></details>
+      <details><summary>Where does my account live?</summary><p>Until the free cloud connection is switched on, accounts are local: your name, email and a SHA-256 hash of your password (never the password itself) are stored only in this browser on this device, and your codes are kept per account on this device. That means your account works here, not yet on your phone or another computer — syncing across devices arrives with the same one-time cloud connection, which also switches on Google sign-in.</p></details>
+      <details><summary>Which format should I download?</summary><p>PNG for screens and most printing, JPG for photos/documents, SVG for professional print and signage (infinite scaling), and PDF for a ready-to-share one-page document.</p></details>
+    </div>
+    <div style="text-align:center;margin-top:26px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn ghost" data-modal="aboutModal">About QRForge</button>
+      <button class="btn ghost" data-modal="privacyModal">Privacy</button>
+      <button class="btn ghost" data-modal="termsModal">Terms</button>
+      <button class="btn ghost" data-modal="contactModal">Contact</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="page" id="page-scan" data-page="scan">
+<!-- SCANNER -->
+<section class="block" id="scanner">
+  <div class="wrap">
+    <h2 class="title">QR code scanner</h2>
+    <p class="lead">Upload a photo or screenshot of a QR code and read what is inside. Decoding happens on your device.</p>
+    <div style="max-width:720px;margin:0 auto">
+      <div class="dropzone"><b>Drop a QR image here, or choose a file</b><br><input type="file" id="scanInput" accept="image/*"></div>
+      <div id="scanOut" style="margin-top:16px"></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="page" id="page-bulk" data-page="bulk">
+<!-- BULK -->
+<section class="block alt" id="bulk">
+  <div class="wrap">
+    <h2 class="title">Bulk QR codes from CSV</h2>
+    <p class="lead">Upload a CSV with headers <b>name,destination</b> — one QR per row. Client-side version: up to 100 rows per batch.</p>
+    <div style="max-width:820px;margin:0 auto">
+      <div class="dropzone"><b>Choose your CSV file</b><br><input type="file" id="bulkInput" accept=".csv,text/csv">
+      <div class="hint">Example:<br>name,destination<br>Table 1,https://example.com/menu<br>Table 2,https://example.com/menu2</div></div>
+      <div id="bulkPreview" style="margin-top:16px"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px" class="no-print">
+        <button class="btn" type="button" id="bulkRender">Render QR grid</button>
+        <button class="btn ghost" type="button" id="bulkDownload">Download all PNGs</button>
+        <button class="btn light" type="button" onclick="window.print()">Print sheet</button>
+      </div>
+      <div id="bulkPrintArea"><div id="bulkGrid"></div></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="page" id="page-codes" data-page="codes">
+<!-- MY CODES -->
+<section class="block" id="mycodes">
+  <div class="wrap">
+    <h2 class="title">My Codes</h2>
+    <p class="lead">Designs you saved in this browser — under your account when you are signed in, or in the separate guest list when you are not. Load one to keep editing it, duplicate it, or delete it. Static QR codes never expire — you can regenerate the exact same code any time.</p>
+    <div style="max-width:820px;margin:0 auto" id="savedList"></div>
+  </div>
+</section>
+</div>
+
+<div class="page active" id="page-panel" data-page="panel">
+<!-- MY PANEL -->
+<section class="block" id="panel">
+  <div class="wrap">
+    <h2 class="title">My Panel — tracked codes &amp; scans</h2>
+    <p class="lead">Your tracked (dynamic) codes live here: change a destination without reprinting, and — once the free cloud connection is on — see how many scans each code gets, on which platform, and roughly where.</p>
+    <div id="panelBanner"></div>
+    <div id="panelSignedOut" style="display:none;max-width:900px;margin:0 auto 20px"><div class="card" style="text-align:center"><h3>Sign in to see your panel</h3><p>Your tracked codes, scan counts and destinations are managed in your panel. Sign in to see them here — guest tracked codes you create still appear below until then.</p><p style="margin-top:14px"><a class="btn" href="/signin">Sign In</a> <a class="btn ghost" href="/signup">Create free account</a></p></div></div>
+    <div class="panel-stats">
+      <div class="pstat"><div class="n" id="statMyCodes">0</div><div class="l">My codes</div></div>
+      <div class="pstat"><div class="n" id="statTotalScans">0</div><div class="l">Total scans</div></div>
+      <div class="pstat"><div class="n" id="statWeekScans">0</div><div class="l">Scans — last 7 days</div></div>
+      <div class="pstat"><div class="n" id="statTopCode">—</div><div class="l">Top code</div></div>
+    </div>
+    <div style="max-width:900px;margin:0 auto" id="panelList"></div>
+  </div>
+</section>
+</div>
+
+<div class="page" id="page-signin" data-page="signin">
+<div class="authwrap">
+  <div class="authcard">
+    <h2>Sign in to QRForge</h2>
+    <p class="sub2">Welcome back — your codes and your panel live on this device.</p>
+    <p id="signinMsg" class="auth-msg" style="display:none"></p>
+    <form id="signInForm" novalidate>
+      <div class="field"><label for="siEmail">Email</label><input type="email" id="siEmail" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label for="siPass">Password</label><input type="password" id="siPass" autocomplete="current-password" placeholder="••••••••"></div>
+      <p class="auth-err" id="siError"></p>
+      <button class="btn" type="submit" style="width:100%;justify-content:center">Sign In</button>
+    </form>
+    <div class="auth-or">— or —</div>
+    <button class="btn ghost" type="button" id="googleBtn" style="width:100%;justify-content:center">Continue with Google</button>
+    <p class="hint" id="googleNote" style="display:none;margin-top:8px">Google sign-in switches on when the free cloud account is connected — one-time owner setup.</p>
+    <p class="authswitch">New to QRForge? <a href="/signup"><b>Create a free account</b></a></p>
+    <p class="hint" style="margin-top:12px">Honest note: until the free cloud connection is on, your account lives in this browser on this device only. Your password is stored only as a SHA-256 hash — never in plain text, and never sent anywhere.</p>
+  </div>
+</div>
+</div>
+
+<div class="page" id="page-signup" data-page="signup">
+<div class="authwrap">
+  <div class="authcard">
+    <h2>Create your free account</h2>
+    <p class="sub2">Free forever — unlimited codes, your tracked-QR panel, and still no watermark.</p>
+    <p id="signupMsg" class="auth-msg" style="display:none"></p>
+    <form id="signUpForm" novalidate>
+      <div class="field"><label for="suName">Your name</label><input type="text" id="suName" autocomplete="name" placeholder="e.g. Ali Khan"></div>
+      <div class="field"><label for="suEmail">Email</label><input type="email" id="suEmail" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label for="suPass">Password (6+ characters)</label><input type="password" id="suPass" autocomplete="new-password" placeholder="••••••••"></div>
+      <p class="auth-err" id="suError"></p>
+      <button class="btn" type="submit" style="width:100%;justify-content:center">Create free account</button>
+    </form>
+    <div class="auth-or">— or —</div>
+    <button class="btn ghost" type="button" id="googleBtnUp" style="width:100%;justify-content:center">Continue with Google</button>
+    <p class="hint" id="googleNoteUp" style="display:none;margin-top:8px">Google sign-in switches on when the free cloud account is connected — one-time owner setup.</p>
+    <p class="authswitch">Already have an account? <a href="/signin"><b>Sign In</b></a></p>
+    <p class="hint" style="margin-top:12px">Honest note: until the free cloud connection is on, your account lives in this browser on this device only. Your password is stored only as a SHA-256 hash — never in plain text, and never sent anywhere.</p>
+  </div>
+</div>
+</div>
+</main>
+
+<!-- MODALS -->
+<div class="modal" id="aboutModal"><div class="box"><button class="close" data-close>✕ Close</button><h2>About QRForge</h2><p>QRForge is a free, browser-based QR code studio built for small businesses, restaurants, events and creators. It creates standards-based static QR codes for links, Wi-Fi, contact cards, events, menus, reviews and more — with logo embedding, brand colour sampling, contrast checking, a QR scanner and bulk generation from CSV.</p><p>Generation happens on your device, which is why QRForge works offline once loaded. Accounts and saved codes are stored locally in your browser on this device; the optional free cloud connection (Supabase) adds Google sign-in, cross-device accounts and scan tracking when the site owner switches it on.</p><p>Founded by Muneeb Ullah.</p></div></div>
+<div class="modal" id="privacyModal"><div class="box"><button class="close" data-close>✕ Close</button><h2>Privacy Policy</h2><p>QRForge does not collect, upload or store your QR content, logos, images or CSV files on any server — all processing happens locally in your browser.</p><p>Designs you save under “My Codes” are stored only in your own browser's localStorage and can be deleted at any time from that section or by clearing your browser data.</p><p>If you create an account, your name, email and a SHA-256 hash of your password (never the password itself) are stored only in this browser's localStorage on your device — nothing is sent to a server. If the owner has switched on the free cloud connection and you use tracked codes, a scan records only the time, platform/device type and rough country/city — no personal data about the person scanning.</p><p>The optional QR scanner fallback (jsQR) and the web font are loaded from public CDNs only when needed; if they cannot load, the core generator still works offline. Contact: hustlewithmuneeb@gmail.com.</p></div></div>
+<div class="modal" id="termsModal"><div class="box"><button class="close" data-close>✕ Close</button><h2>Terms of Use</h2><p>You may use QR codes generated with QRForge for personal and commercial purposes, free of charge and without attribution.</p><p>QR codes are provided “as is”. Always test-scan your code before printing or publishing, and check that the encoded content (links, phone numbers, Wi-Fi details) is correct. QRForge is not responsible for losses caused by incorrect content, low-contrast designs or destinations that later stop working.</p><p>Do not use QRForge to create codes for unlawful, deceptive or harmful content.</p></div></div>
+<div class="modal" id="contactModal"><div class="box"><button class="close" data-close>✕ Close</button><h2>Contact</h2><p>Questions, feedback or business enquiries:</p><p><b>Muneeb Ullah</b><br>Email: <a href="mailto:hustlewithmuneeb@gmail.com">hustlewithmuneeb@gmail.com</a></p><p>Tip: include a screenshot of the QR settings you used if you are reporting a scanning problem — it helps us help you faster.</p></div></div>
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a class="logo" href="/#top"><svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><rect width="64" height="64" rx="13" fill="#fff"/><rect x="10" y="10" width="18" height="18" rx="3" fill="none" stroke="#111" stroke-width="4"/><rect x="16.5" y="16.5" width="5" height="5" fill="#111"/><rect x="36" y="10" width="18" height="18" rx="3" fill="none" stroke="#111" stroke-width="4"/><rect x="42.5" y="16.5" width="5" height="5" fill="#111"/><rect x="10" y="36" width="18" height="18" rx="3" fill="none" stroke="#111" stroke-width="4"/><rect x="16.5" y="42.5" width="5" height="5" fill="#111"/><rect x="37" y="37" width="7" height="7" fill="#111"/><rect x="48" y="37" width="7" height="7" fill="#111"/><rect x="37" y="48" width="7" height="7" fill="#111"/></svg> QRForge</a>
+        <p style="margin-top:12px;font-size:14.5px;max-width:300px">Free QR code studio. No signup, no watermark, no expiry. Built to work anywhere — including offline.</p>
+      </div>
+      <div><h4>Generator</h4><a href="/">Create a QR code</a><a href="/#types">QR types</a><a href="/bulk">Bulk QR codes</a><a href="/my-codes">My Codes</a></div>
+      <div><h4>Tools</h4><a href="/scan">QR scanner</a><a href="/#features">Features</a><a href="/#faq">FAQ &amp; guides</a><a href="/blog">Blog</a></div>
+      <div><h4>Company</h4><a href="#" data-modal="aboutModal">About</a><a href="#" data-modal="privacyModal">Privacy</a><a href="#" data-modal="termsModal">Terms</a><a href="#" data-modal="contactModal">Contact</a></div>
+    </div>
+    <div class="fbottom"><span>© 2026 QRForge — Founded by Muneeb Ullah · hustlewithmuneeb@gmail.com</span><span>Static QR codes never expire.</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+//# sourceMappingURL=/sm/26b4b0d0b1e283d6b3ec9857ac597d7a60c76ac17be1ef4c965f03086de426bb.map</script>
+<script>window.QRFORGE_PAGE="panel";</script>
+<script>
+(function(){
+"use strict";
+/* ============ Helpers ============ */
+var $=function(id){return document.getElementById(id)};
+function escWifi(s){return String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/:/g,"\\:").replace(/"/g,'\\"')}
+function pad(n){return (n<10?"0":"")+n}
+function toICSDate(dstr,tstr){if(!dstr)return"";var d=dstr.replace(/-/g,"");var t=(tstr||"10:00").replace(":","");return d+"T"+t+"00"}
+function toast(msg){var t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("show")},2600)}
+function slug(s){return String(s||"qr").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"qr"}
+
+/* ============ CONFIG — one-time owner setup ============
+   Cloud connection (Supabase — free plan, no card needed):
+   1) Paste your Supabase Project URL into supabaseUrl and the anon (public) key into supabaseAnonKey.
+   2) backendBaseUrl may stay "" — it then defaults to supabaseUrl + "/functions/v1".
+      (Or paste the full functions base URL here directly.)
+   While everything is empty the cloud is NOT connected: accounts and codes are local
+   to this browser, Google sign-in is off, and tracked codes are registered in
+   My Panel but their links do not open and scans are not counted yet.
+   The anon key is safe to publish. NEVER paste the service_role key here. */
+window.QRFORGE_CONFIG={backendBaseUrl:"",supabaseUrl:"https://gvorhkiuvhrjawicvnas.supabase.co",supabaseAnonKey:"sb_publishable_NvpN92MiZ49lscpuNMrFfQ_vTUluINA"};
+function cfg(){return window.QRFORGE_CONFIG||{}}
+function effectiveBackendBase(){var c=cfg();var b=String(c.backendBaseUrl||"").replace(/\/+$/,"");if(b)return b;var s=String(c.supabaseUrl||"").replace(/\/+$/,"");return s?s+"/functions/v1":""}
+function cloudConnected(){return !!effectiveBackendBase()}
+
+/* ============ QR Types ============ */
+var TYPES={
+ url:{label:"URL",icon:"🔗",desc:"Website or any link",fields:[{id:"url",label:"Website URL",ph:"https://yourwebsite.com",def:"https://example.com"}]},
+ text:{label:"Text",icon:"📝",desc:"Plain text message",fields:[{id:"text",label:"Your text",type:"textarea",def:"Hello from QRForge!"}]},
+ wifi:{label:"Wi-Fi",icon:"📶",desc:"Guests join instantly",fields:[{id:"ssid",label:"Network name (SSID)",ph:"MyWiFi",def:"MyWiFi"},{id:"pass",label:"Password",ph:"••••••••",def:""},{id:"enc",label:"Security",type:"select",options:["WPA","WEP","nopass"],def:"WPA"},{id:"hidden",label:"Hidden network",type:"select",options:["No","Yes"],def:"No"}]},
+ vcard:{label:"vCard",icon:"👤",desc:"Digital business card",fields:[{id:"first",label:"First name",def:"Alex"},{id:"last",label:"Last name",def:""},{id:"org",label:"Company",def:""},{id:"title",label:"Job title",def:""},{id:"phone",label:"Phone",ph:"+1 555 000 1234",def:""},{id:"email",label:"Email",ph:"you@company.com",def:""},{id:"website",label:"Website",ph:"https://",def:""},{id:"address",label:"Address",def:""}]},
+ email:{label:"Email",icon:"✉️",desc:"Pre-filled email",fields:[{id:"to",label:"To (email address)",ph:"hello@company.com",def:""},{id:"subject",label:"Subject",def:""},{id:"body",label:"Message",type:"textarea",def:""}]},
+ sms:{label:"SMS",icon:"💬",desc:"Pre-filled text message",fields:[{id:"number",label:"Phone number",ph:"+1 555 000 1234",def:""},{id:"message",label:"Message",type:"textarea",def:""}]},
+ phone:{label:"Phone",icon:"📞",desc:"Tap to call",fields:[{id:"number",label:"Phone number",ph:"+1 555 000 1234",def:""}]},
+ whatsapp:{label:"WhatsApp",icon:"🟢",desc:"Start a WhatsApp chat",fields:[{id:"number",label:"WhatsApp number (with country code)",ph:"15550001234",def:""},{id:"message",label:"Pre-filled message",type:"textarea",def:"Hi! I have a question."}]},
+ location:{label:"Location",icon:"📍",desc:"Open in maps",fields:[{id:"lat",label:"Latitude",ph:"40.7128",def:""},{id:"lng",label:"Longitude",ph:"-74.0060",def:""},{id:"label",label:"Place name (optional)",def:""}]},
+ event:{label:"Event",icon:"📅",desc:"Save to calendar",fields:[{id:"title",label:"Event title",def:"My Event"},{id:"date",label:"Start date",type:"date",def:"2026-12-01"},{id:"time",label:"Start time",type:"time",def:"18:00"},{id:"enddate",label:"End date",type:"date",def:"2026-12-01"},{id:"endtime",label:"End time",type:"time",def:"20:00"},{id:"loc",label:"Location",def:""},{id:"desc",label:"Description",type:"textarea",def:""}]},
+ pdf:{label:"PDF / Menu",icon:"📄",desc:"Link to a PDF or menu",fields:[{id:"url",label:"PDF or menu URL",ph:"https://yoursite.com/menu.pdf",def:"https://example.com/menu.pdf"}]},
+ review:{label:"Google Review",icon:"⭐",desc:"Get more reviews",fields:[{id:"url",label:"Your Google review link",ph:"https://g.page/r/.../review",def:""}]}
+};
+var TYPE_ORDER=["url","text","wifi","vcard","email","sms","phone","whatsapp","location","event","pdf","review"];
+
+function buildPayload(type,v){
+ v=v||{};
+ switch(type){
+  case "url": case "pdf": case "review": {var u=String(v.url||"").trim(); if(u && !/^[a-z][a-z0-9+.-]*:/i.test(u)) u="https://"+u; return u;}
+  case "text": return String(v.text||"");
+  case "wifi": {var enc=v.enc||"WPA"; var hidden=(v.hidden==="Yes")?"true":"false"; if(enc==="nopass") return "WIFI:T:nopass;S:"+escWifi(v.ssid)+";H:"+hidden+";;"; return "WIFI:T:"+enc+";S:"+escWifi(v.ssid||"")+";P:"+escWifi(v.pass||"")+";H:"+hidden+";;";}
+  case "vcard": {var lines=["BEGIN:VCARD","VERSION:3.0","N:"+(v.last||"")+";"+(v.first||"")+";;;","FN:"+((v.first||"")+" "+(v.last||"")).trim()]; if(v.org)lines.push("ORG:"+v.org); if(v.title)lines.push("TITLE:"+v.title); if(v.phone)lines.push("TEL;TYPE=CELL:"+v.phone); if(v.email)lines.push("EMAIL:"+v.email); if(v.website)lines.push("URL:"+v.website); if(v.address)lines.push("ADR:;;"+v.address+";;;;"); lines.push("END:VCARD"); return lines.join("\n");}
+  case "email": {var q=[]; if(v.subject)q.push("subject="+encodeURIComponent(v.subject)); if(v.body)q.push("body="+encodeURIComponent(v.body)); return "mailto:"+(v.to||"")+(q.length?"?"+q.join("&"):"");}
+  case "sms": return "SMSTO:"+(v.number||"")+":"+(v.message||"");
+  case "phone": return "tel:"+String(v.number||"").replace(/\s+/g,"");
+  case "whatsapp": {var num=String(v.number||"").replace(/[^0-9]/g,""); var base="https://wa.me/"+num; if(v.message)base+="?text="+encodeURIComponent(v.message); return base;}
+  case "location": {var g="geo:"+(v.lat||"0")+","+(v.lng||"0"); if(v.label)g+="?q="+encodeURIComponent(v.label); return g;}
+  case "event": {var l=["BEGIN:VEVENT","DTSTART:"+toICSDate(v.date,v.time),"DTEND:"+toICSDate(v.enddate||v.date,v.endtime),"SUMMARY:"+(v.title||"Event")]; if(v.loc)l.push("LOCATION:"+v.loc); if(v.desc)l.push("DESCRIPTION:"+String(v.desc).replace(/\n/g," ")); l.push("END:VEVENT"); return l.join("\n");}
+ }
+ return "";
+}
+
+/* ============ State ============ */
+var state={type:"url",moduleStyle:"square",eyeStyle:"square",fg:"#111111",bg:"#ffffff",eye:"#111111",ecc:"M",margin:4,size:1024,frame:"none",frameText:"SCAN ME",tracked:false,trackedId:null,logoImg:null,logoData:null};
+function collectValues(){var v={};var form=document.querySelector('.typeform[data-type="'+state.type+'"]');if(!form)return v;form.querySelectorAll("[data-field]").forEach(function(el){v[el.getAttribute("data-field")]=el.value});return v}
+function isUrlFamily(){return state.type==="url"||state.type==="pdf"||state.type==="review"}
+function getTrackedId(){if(!state.trackedId){var chars="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<8;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));state.trackedId=s}return state.trackedId}
+function trackedShortUrl(){var base=effectiveBackendBase();return (base?base:"https://tracking.qrforge.app")+"/r/"+getTrackedId()}
+function currentPayload(){if(state.tracked&&isUrlFamily())return trackedShortUrl();return buildPayload(state.type,collectValues())}
+
+/* ============ Frames ============ */
+var FRAMES=[["none","None"],["classic","Classic"],["double","Double"],["rounded","Rounded"],["corners","Corners"],["banner-bottom","Banner ↓"],["banner-top","Banner ↑"],["label-bottom","Label"],["bubble","Bubble"],["lines","Lines"]];
+var FRAME_TEXT_PRESETS=["SCAN ME","SCAN FOR MENU","FOLLOW US","SCAN FOR WI-FI","LEAVE A REVIEW","SCAN TO PAY","SCAN TO ORDER"];
+function frameTextValue(){var t=String(state.frameText==null?"SCAN ME":state.frameText).slice(0,40);return t.trim()?t:"SCAN ME"}
+function escXml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+/* extra space (px, relative to a square QR area of width W) reserved above/below the QR for text frames */
+function frameLayout(W){
+ switch(state.frame){
+  case "banner-bottom": return {top:0,bottom:Math.round(W*0.17)};
+  case "banner-top": return {top:Math.round(W*0.17),bottom:0};
+  case "label-bottom": return {top:0,bottom:Math.round(W*0.15)};
+  case "bubble": return {top:0,bottom:Math.round(W*0.20)};
+  case "lines": return {top:Math.round(W*0.05),bottom:Math.round(W*0.17)};
+  default: return {top:0,bottom:0};
+ }
+}
+/* padding (px) around the whole design so border-style frames sit outside the quiet zone */
+function framePad(W){
+ switch(state.frame){case "classic":case "double":case "rounded":case "corners":case "bubble": return Math.round(W*0.04); default:return 0}
+}
+function frameGeom(W){var lay=frameLayout(W),P=framePad(W);return {P:P,T:lay.top,B:lay.bottom,W:W+2*P,H:W+lay.top+lay.bottom+2*P,qrX:P,qrY:P+lay.top,qrSize:W}}
+function frameFontPx(W,zoneH){var txt=frameTextValue();var byZone=zoneH*0.42,byWidth=(W*0.92)/(Math.max(1,txt.length)*0.62);return Math.max(9,Math.floor(Math.min(byZone,byWidth,W*0.075)))}
+function setFrame(id){state.frame=id;syncFrameUI();render()}
+function syncFrameUI(){var g=$("frameGallery");if(g)g.querySelectorAll(".framecard").forEach(function(x){x.classList.toggle("active",x.getAttribute("data-frame")===state.frame)});var ft=$("frameText");if(ft&&ft.value!==state.frameText)ft.value=state.frameText}
+
+/* ============ Build type UI ============ */
+var tabsEl=$("typeTabs"),formsEl=$("typeForms"),dropEl=$("typeDrop"),gridEl=$("typeGrid");
+TYPE_ORDER.forEach(function(key){
+ var t=TYPES[key];
+ var b=document.createElement("button");b.type="button";b.className="tab"+(key==="url"?" active":"");b.textContent=t.icon+" "+t.label;b.setAttribute("data-type",key);
+ b.addEventListener("click",function(){selectType(key,true)});tabsEl.appendChild(b);
+ var a=document.createElement("a");a.href="/";a.innerHTML=t.label+" <span>"+t.desc+"</span>";a.addEventListener("click",function(ev){if(CURRENT_PAGE==="create"){ev.preventDefault();selectType(key,false)}else{studioIntent({kind:"type",type:key})}});dropEl.appendChild(a);
+ var card=document.createElement("button");card.type="button";card.className="card typecard";card.innerHTML='<div class="ic">'+t.icon+'</div><h3>'+t.label+'</h3><p>'+t.desc+'</p>';
+ card.addEventListener("click",function(){selectType(key,true);goToStudio()});gridEl.appendChild(card);
+ var form=document.createElement("div");form.className="typeform"+(key==="url"?" active":"");form.setAttribute("data-type",key);
+ t.fields.forEach(function(f){
+   var wrap=document.createElement("div");wrap.className="field";
+   var lab=document.createElement("label");lab.textContent=f.label;wrap.appendChild(lab);
+   var el;
+   if(f.type==="textarea"){el=document.createElement("textarea")}
+   else if(f.type==="select"){el=document.createElement("select");f.options.forEach(function(o){var op=document.createElement("option");op.value=o;op.textContent=o;el.appendChild(op)})}
+   else{el=document.createElement("input");el.type=f.type||"text"}
+   el.setAttribute("data-field",f.id);if(f.ph)el.placeholder=f.ph;if(f.def!=null)el.value=f.def;
+   el.addEventListener("input",render);el.addEventListener("change",render);wrap.appendChild(el);form.appendChild(wrap);
+ });
+ formsEl.appendChild(form);
+});
+var USECASES=[["🍽️","Restaurant menus","pdf"],["⭐","Get Google reviews","review"],["🎉","Weddings & events","event"],["🏠","Real estate signs","url"],["💼","Business cards","vcard"],["📶","Café & office Wi-Fi","wifi"],["📦","Product packaging","url"],["💬","WhatsApp orders","whatsapp"],["📍","Store directions","location"]];
+var ucEl=$("useCases");
+USECASES.forEach(function(u){var d=document.createElement("button");d.type="button";d.className="card typecard";d.innerHTML='<div class="ic">'+u[0]+'</div><h3>'+u[1]+'</h3><p>Open the studio with the '+TYPES[u[2]].label+' type ready to go.</p>';d.addEventListener("click",function(){selectType(u[2],true);goToStudio()});ucEl.appendChild(d)});
+
+function selectType(key,scroll){
+ state.type=key;
+ document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("active",t.getAttribute("data-type")===key)});
+ document.querySelectorAll(".typeform").forEach(function(f){f.classList.toggle("active",f.getAttribute("data-type")===key)});
+ render();
+}
+
+/* ============ QR matrix + rendering ============ */
+function makeQR(text,ecc){
+ var qr=qrcode(0,ecc); qr.addData(String(text||" ")); qr.make(); return qr;
+}
+function isEye(r,c,count){
+ return (r<7&&c<7)||(r<7&&c>=count-7)||(r>=count-7&&c<7);
+}
+function drawEye(ctx,x,y,cell,style,color){
+ ctx.fillStyle=color;
+ var w=cell*7;
+ if(style==="circle"){ctx.beginPath();ctx.arc(x+w/2,y+w/2,w/2,0,Math.PI*2);ctx.fill();ctx.fillStyle=state.bg;ctx.beginPath();ctx.arc(x+w/2,y+w/2,w/2-cell*1.1,0,Math.PI*2);ctx.fill();ctx.fillStyle=color;ctx.beginPath();ctx.arc(x+w/2,y+w/2,cell*1.5,0,Math.PI*2);ctx.fill();}
+ else{var rad=style==="rounded"?cell*1.6:cell*0.4;ctx.beginPath();ctx.roundRect(x,y,w,w,rad);ctx.fill();ctx.fillStyle=state.bg;var iw=w-cell*2;ctx.beginPath();ctx.roundRect(x+cell,y+cell,iw,iw,style==="rounded"?cell:cell*0.2);ctx.fill();ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x+cell*2,y+cell*2,cell*3,cell*3,style==="rounded"?cell*0.7:0);ctx.fill();}
+}
+function drawFrameCanvas(ctx,g,W){
+ var fg=state.fg,bg=state.bg,txt=frameTextValue(),P=g.P,qrBot=g.qrY+g.qrSize,H=g.H;
+ function frameTextAt(cy,zoneH,color){ctx.fillStyle=color;ctx.font="800 "+frameFontPx(W,zoneH)+"px 'Plus Jakarta Sans',Arial,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(txt,W/2,cy)}
+ switch(state.frame){
+  case "classic":{var lw=Math.max(3,W*0.011);ctx.strokeStyle=fg;ctx.lineWidth=lw;ctx.strokeRect(lw/2,lw/2,W-lw,H-lw);break}
+  case "double":{var lw2=Math.max(2,W*0.008),gap=W*0.022;ctx.strokeStyle=fg;ctx.lineWidth=lw2;ctx.strokeRect(lw2/2,lw2/2,W-lw2,H-lw2);var in2=lw2+gap;ctx.strokeRect(in2,in2,W-in2*2,H-in2*2);break}
+  case "rounded":{var lw3=Math.max(4,W*0.016);ctx.strokeStyle=fg;ctx.lineWidth=lw3;ctx.beginPath();ctx.roundRect(lw3/2,lw3/2,W-lw3,H-lw3,W*0.045);ctx.stroke();break}
+  case "corners":{var L=W*0.10,lw4=Math.max(3,W*0.013),ix=Math.max(1,W*0.004);ctx.fillStyle=fg;
+    ctx.fillRect(ix,ix,L,lw4);ctx.fillRect(ix,ix,lw4,L);
+    ctx.fillRect(W-ix-L,ix,L,lw4);ctx.fillRect(W-ix-lw4,ix,lw4,L);
+    ctx.fillRect(ix,H-ix-lw4,L,lw4);ctx.fillRect(ix,H-ix-L,lw4,L);
+    ctx.fillRect(W-ix-L,H-ix-lw4,L,lw4);ctx.fillRect(W-ix-lw4,H-ix-L,lw4,L);break}
+  case "banner-bottom":{ctx.fillStyle=fg;ctx.fillRect(0,qrBot,W,g.B);frameTextAt(qrBot+g.B/2,g.B,bg);break}
+  case "banner-top":{ctx.fillStyle=fg;ctx.fillRect(0,0,W,g.T);frameTextAt(g.T/2,g.T,bg);break}
+  case "label-bottom":{ctx.fillStyle=bg;ctx.fillRect(0,qrBot,W,g.B);ctx.strokeStyle=fg;ctx.lineWidth=Math.max(2,W*0.007);ctx.strokeRect(ctx.lineWidth/2,qrBot+ctx.lineWidth/2,W-ctx.lineWidth,g.B-ctx.lineWidth);frameTextAt(qrBot+g.B/2,g.B,fg);break}
+  case "bubble":{var lw5=Math.max(3,W*0.011);ctx.strokeStyle=fg;ctx.lineWidth=lw5;ctx.beginPath();ctx.roundRect(lw5/2,lw5/2,W-lw5,qrBot+g.P-lw5,W*0.03);ctx.stroke();
+    var cx=W/2,tw=W*0.035,tailH=g.B*0.34,tailY=qrBot+g.P-lw5/2;
+    ctx.beginPath();ctx.moveTo(cx-tw,tailY);ctx.lineTo(cx+tw,tailY);ctx.lineTo(cx,tailY+tailH);ctx.closePath();ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=fg;ctx.lineWidth=lw5;ctx.stroke();
+    ctx.fillStyle=bg;ctx.fillRect(cx-tw+lw5/2,tailY-lw5,tw*2-lw5,lw5*1.4);
+    frameTextAt(tailY+tailH+(H-tailY-tailH)/2,H-tailY-tailH,fg);break}
+  case "lines":{var lw6=Math.max(2,W*0.007),lx0=W*0.05,lx1=W*0.95;ctx.fillStyle=fg;
+    ctx.fillRect(lx0,g.qrY-g.T*0.45,lx1-lx0,lw6);
+    var line2Y=qrBot+g.B*0.30;ctx.fillRect(lx0,line2Y,lx1-lx0,lw6);
+    frameTextAt(line2Y+(H-line2Y)/2,H-line2Y,fg);break}
+ }
+}
+function renderToCanvas(canvas,text,exportSize){
+ var qr; try{qr=makeQR(text||"https://example.com",state.ecc)}catch(e){qr=makeQR("https://example.com",state.ecc)}
+ var count=qr.getModuleCount();
+ var margin=state.margin;
+ var total=count+margin*2;
+ var size=exportSize||640;
+ var g=frameGeom(size);
+ var W=g.W,H=g.H;
+ canvas.width=W; canvas.height=H;
+ var ctx=canvas.getContext("2d");
+ ctx.fillStyle=state.bg; ctx.fillRect(0,0,W,H);
+ var cell=size/total;
+ var ox=g.qrX+margin*cell, oy=g.qrY+margin*cell;
+ /* data modules */
+ for(var r=0;r<count;r++){for(var c=0;c<count;c++){if(!qr.isDark(r,c))continue;if(isEye(r,c,count))continue;
+   var x=ox+c*cell,y=oy+r*cell;ctx.fillStyle=state.fg;
+   if(state.moduleStyle==="dots"){ctx.beginPath();ctx.arc(x+cell/2,y+cell/2,cell*0.42,0,Math.PI*2);ctx.fill()}
+   else if(state.moduleStyle==="rounded"){ctx.beginPath();ctx.roundRect(x+cell*0.06,y+cell*0.06,cell*0.88,cell*0.88,cell*0.32);ctx.fill()}
+   else{ctx.fillRect(x,y,cell+0.5,cell+0.5)}
+ }}
+ /* eyes */
+ drawEye(ctx,ox,oy,cell,state.eyeStyle,state.eye);
+ drawEye(ctx,ox+(count-7)*cell,oy,cell,state.eyeStyle,state.eye);
+ drawEye(ctx,ox,oy+(count-7)*cell,cell,state.eyeStyle,state.eye);
+ /* frame (border shapes, banners, label, bubble, lines + frame text) */
+ drawFrameCanvas(ctx,g,size);
+ /* logo */
+ if(state.logoImg){
+   var lw=size*0.22, lh=lw*(state.logoImg.naturalHeight/state.logoImg.naturalWidth||1); if(lh>size*0.22)lh=size*0.22;
+   var lx=g.qrX+size/2-lw/2, ly=g.qrY+size/2-lh/2, padBox=size*0.025;
+   ctx.fillStyle="#ffffff";ctx.beginPath();ctx.roundRect(lx-padBox,ly-padBox,lw+padBox*2,lh+padBox*2,10);ctx.fill();
+   ctx.drawImage(state.logoImg,lx,ly,lw,lh);
+ }
+ return {count:count,qr:qr};
+}
+
+/* ============ Contrast ============ */
+function luminance(hex){var h=String(hex||"#000000").replace("#","");if(h.length===3)h=h.split("").map(function(x){return x+x}).join("");var r=parseInt(h.substr(0,2),16)/255,g=parseInt(h.substr(2,2),16)/255,b=parseInt(h.substr(4,2),16)/255;function f(c){return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)}return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b)}
+function contrastRatio(a,b){var l1=luminance(a),l2=luminance(b);var hi=Math.max(l1,l2),lo=Math.min(l1,l2);return (hi+0.05)/(lo+0.05)}
+function updateContrast(){
+ var ratio=contrastRatio(state.fg,state.bg);var box=$("contrastBox");
+ if(ratio>=3){box.className="contrast pass";box.innerHTML="✓ Scan-safety: <b>"+ratio.toFixed(2)+":1</b> contrast — PASS (minimum 3:1"+(ratio>=4.5?", ideal 4.5:1+ reached ✓":", aim for 4.5:1+ for best results")+")."}
+ else{box.className="contrast warn";box.innerHTML="⚠ Scan-safety: <b>"+ratio.toFixed(2)+":1</b> contrast — TOO LOW. Scanners may fail. Darken the QR colour or lighten the background (need ≥ 3:1, ideally ≥ 4.5:1)."}
+}
+
+/* ============ Main render ============ */
+function render(){
+ var payload=currentPayload();
+ $("payloadPreview").textContent=payload||"(empty — add content above)";
+ renderToCanvas($("qrCanvas"),payload||"https://example.com",640);
+ updateContrast();
+ updateTrackedUI();
+}
+
+/* ============ Controls ============ */
+function segWire(id,key){var seg=$(id);seg.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){seg.querySelectorAll("button").forEach(function(x){x.classList.remove("active")});b.classList.add("active");state[key]=b.getAttribute("data-v");render()})})}
+segWire("moduleSeg","moduleStyle");segWire("eyeSeg","eyeStyle");
+
+/* Frames gallery + frame text */
+function frameThumb(id){
+ var qr='<span class="fc-qr"></span>';
+ switch(id){
+  case "none": return qr;
+  case "classic": return '<span class="fc-box">'+qr+'</span>';
+  case "double": return '<span class="fc-box double">'+qr+'</span>';
+  case "rounded": return '<span class="fc-box rounded">'+qr+'</span>';
+  case "corners": return '<span class="fc-box corners"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>'+qr+'</span>';
+  case "banner-bottom": return '<span class="fc-col">'+qr+'<span class="fc-banner">SCAN ME</span></span>';
+  case "banner-top": return '<span class="fc-col"><span class="fc-banner">SCAN ME</span>'+qr+'</span>';
+  case "label-bottom": return '<span class="fc-col">'+qr+'<span class="fc-label">SCAN ME</span></span>';
+  case "bubble": return '<span class="fc-col"><span class="fc-box bubble">'+qr+'</span><span class="fc-tail"></span><span class="fc-cap" style="margin-top:3px">SCAN ME</span></span>';
+  case "lines": return '<span class="fc-col"><span class="fc-line"></span><span style="height:4px"></span>'+qr+'<span style="height:4px"></span><span class="fc-line"></span><span class="fc-cap" style="margin-top:3px">SCAN ME</span></span>';
+ }
+ return qr;
+}
+var frameGalleryEl=$("frameGallery");
+FRAMES.forEach(function(fr){
+ var b=document.createElement("button");b.type="button";b.className="framecard"+(fr[0]===state.frame?" active":"");b.setAttribute("data-frame",fr[0]);
+ b.innerHTML='<span class="fc-stage">'+frameThumb(fr[0])+'</span><span>'+fr[1]+'</span>';
+ b.addEventListener("click",function(){setFrame(fr[0])});
+ frameGalleryEl.appendChild(b);
+});
+var presetsEl=$("frameTextPresets");
+FRAME_TEXT_PRESETS.forEach(function(p){
+ var b=document.createElement("button");b.type="button";b.textContent=p;b.setAttribute("data-t",p);
+ b.addEventListener("click",function(){state.frameText=p;$("frameText").value=p;presetsEl.querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x===b)});render()});
+ presetsEl.appendChild(b);
+});
+$("frameText").addEventListener("input",function(){state.frameText=this.value;presetsEl.querySelectorAll("button").forEach(function(x){x.classList.remove("active")});render()});
+function colorWire(colorId,textId,key){var c=$(colorId),t=$(textId);c.addEventListener("input",function(){state[key]=c.value;t.value=c.value.toUpperCase();render()});t.addEventListener("change",function(){var v=t.value.trim();if(/^#?[0-9a-fA-F]{6}$/.test(v)){if(v[0]!=="#")v="#"+v;state[key]=v;c.value=v;t.value=v.toUpperCase();render()}})}
+colorWire("fgColor","fgText","fg");colorWire("bgColor","bgText","bg");colorWire("eyeColor","eyeText","eye");
+$("eccSel").addEventListener("change",function(){state.ecc=this.value;render()});
+$("sizeSel").addEventListener("change",function(){state.size=parseInt(this.value,10)});
+$("marginRange").addEventListener("input",function(){state.margin=parseInt(this.value,10);$("marginVal").textContent=this.value;render()});
+
+/* Templates */
+var TEMPLATES=[
+ {name:"Classic",fg:"#111111",bg:"#ffffff",eye:"#111111",mod:"square",eyeS:"square"},
+ {name:"Charcoal",fg:"#2b2b2b",bg:"#f4f4f4",eye:"#111111",mod:"rounded",eyeS:"rounded"},
+ {name:"Graphite Dots",fg:"#3a3a3a",bg:"#ffffff",eye:"#1a1a1a",mod:"dots",eyeS:"circle"},
+ {name:"Slate",fg:"#444444",bg:"#ececec",eye:"#222222",mod:"rounded",eyeS:"rounded"},
+ {name:"Mono Bold",fg:"#000000",bg:"#ffffff",eye:"#000000",mod:"square",eyeS:"square"},
+ {name:"Silver",fg:"#5a5a5a",bg:"#ffffff",eye:"#333333",mod:"dots",eyeS:"rounded"},
+ {name:"Navy Brand",fg:"#1e3a5f",bg:"#ffffff",eye:"#1e3a5f",mod:"rounded",eyeS:"rounded"},
+ {name:"Forest Brand",fg:"#14532d",bg:"#ffffff",eye:"#14532d",mod:"square",eyeS:"rounded"},
+ {name:"Burgundy",fg:"#6b1128",bg:"#fff7f7",eye:"#6b1128",mod:"rounded",eyeS:"circle"},
+ {name:"Royal Purple",fg:"#4c1d95",bg:"#ffffff",eye:"#4c1d95",mod:"dots",eyeS:"circle"}
+];
+var tplEl=$("templates");
+TEMPLATES.forEach(function(t){
+ var b=document.createElement("button");b.type="button";b.className="tpl";
+ b.innerHTML='<span class="sw"><i style="background:'+t.fg+'"></i><i style="background:'+t.bg+'"></i><i style="background:'+t.eye+'"></i></span>'+t.name;
+ b.addEventListener("click",function(){applyTemplate(t);toast("Template applied: "+t.name)});tplEl.appendChild(b);
+});
+function applyTemplate(t){
+ state.fg=t.fg;state.bg=t.bg;state.eye=t.eye;state.moduleStyle=t.mod;state.eyeStyle=t.eyeS;
+ $("fgColor").value=t.fg;$("fgText").value=t.fg.toUpperCase();$("bgColor").value=t.bg;$("bgText").value=t.bg.toUpperCase();$("eyeColor").value=t.eye;$("eyeText").value=t.eye.toUpperCase();
+ [["moduleSeg",t.mod],["eyeSeg",t.eyeS]].forEach(function(pair){$(pair[0]).querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x.getAttribute("data-v")===pair[1])})});
+ render();
+}
+
+/* ============ Logo + Brand Sync ============ */
+$("logoInput").addEventListener("change",function(){
+ var file=this.files&&this.files[0]; if(!file)return;
+ var reader=new FileReader();
+ reader.onload=function(){
+   var img=new Image();
+   img.onload=function(){
+     state.logoImg=img;state.logoData=reader.result;
+     $("logoImgPreview").src=reader.result;$("logoThumb").style.display="flex";
+     if(state.ecc!=="H"){state.ecc="H";$("eccSel").value="H";toast("Logo added — error correction set to H")}
+     extractPalette(img);render();
+   };
+   img.src=reader.result;
+ };
+ reader.readAsDataURL(file);
+});
+$("removeLogo").addEventListener("click",function(){state.logoImg=null;state.logoData=null;$("logoInput").value="";$("logoThumb").style.display="none";$("paletteWrap").style.display="none";render()});
+function extractPalette(img){
+ var cv=document.createElement("canvas");var S=60;cv.width=S;cv.height=S;var cx=cv.getContext("2d");cx.drawImage(img,0,0,S,S);
+ var data; try{data=cx.getImageData(0,0,S,S).data}catch(e){return}
+ var counts={};
+ for(var i=0;i<data.length;i+=4){if(data[i+3]<200)continue;var r=Math.round(data[i]/32)*32,g=Math.round(data[i+1]/32)*32,b=Math.round(data[i+2]/32)*32;var key=r+","+g+","+b;counts[key]=(counts[key]||0)+1}
+ var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]}).slice(0,5);
+ var pal=$("palette");pal.innerHTML="";
+ sorted.forEach(function(k){var p=k.split(",");var hex="#"+p.map(function(x){return Math.min(255,parseInt(x,10)).toString(16).padStart(2,"0")}).join("");
+   var btn=document.createElement("button");btn.type="button";btn.style.background=hex;btn.title=hex+" — use as QR colour";
+   btn.addEventListener("click",function(){state.fg=hex;$("fgColor").value=hex;$("fgText").value=hex.toUpperCase();state.eye=hex;$("eyeColor").value=hex;$("eyeText").value=hex.toUpperCase();render();toast("Brand colour applied: "+hex)});pal.appendChild(btn);});
+ if(sorted.length)$("paletteWrap").style.display="block";
+}
+
+/* ============ Downloads ============ */
+function downloadBlob(blob,filename){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},400)}
+function exportCanvas(){var cv=document.createElement("canvas");renderToCanvas(cv,currentPayload()||"https://example.com",state.size);return cv}
+function baseName(){return "qrforge-"+state.type}
+$("dlPng").addEventListener("click",function(){if(!gateCheck())return;exportCanvas().toBlob(function(b){downloadBlob(b,baseName()+".png");afterCreation("download");toast("PNG downloaded ("+state.size+"px)")},"image/png")});
+$("dlJpg").addEventListener("click",function(){if(!gateCheck())return;exportCanvas().toBlob(function(b){downloadBlob(b,baseName()+".jpg");afterCreation("download");toast("JPG downloaded ("+state.size+"px)")},"image/jpeg",0.95)});
+
+function buildSVG(){
+ var text=currentPayload()||"https://example.com";var qr=makeQR(text,state.ecc);var count=qr.getModuleCount();var m=state.margin;var total=count+m*2;var cell=10;var size=total*cell;
+ var g=frameGeom(size);var W=g.W,H=g.H;var parts=[];
+ parts.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">');
+ parts.push('<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="'+state.bg+'"/>');
+ function eyeSVG(ex,ey){var w=cell*7;if(state.eyeStyle==="circle"){return '<circle cx="'+(ex+w/2)+'" cy="'+(ey+w/2)+'" r="'+(w/2)+'" fill="'+state.eye+'"/><circle cx="'+(ex+w/2)+'" cy="'+(ey+w/2)+'" r="'+(w/2-cell*1.1)+'" fill="'+state.bg+'"/><circle cx="'+(ex+w/2)+'" cy="'+(ey+w/2)+'" r="'+(cell*1.5)+'" fill="'+state.eye+'"/>'}var rad=state.eyeStyle==="rounded"?cell*1.6:cell*0.4;return '<rect x="'+ex+'" y="'+ey+'" width="'+w+'" height="'+w+'" rx="'+rad+'" fill="'+state.eye+'"/><rect x="'+(ex+cell)+'" y="'+(ey+cell)+'" width="'+(w-cell*2)+'" height="'+(w-cell*2)+'" rx="'+(state.eyeStyle==="rounded"?cell:2)+'" fill="'+state.bg+'"/><rect x="'+(ex+cell*2)+'" y="'+(ey+cell*2)+'" width="'+(cell*3)+'" height="'+(cell*3)+'" fill="'+state.eye+'"/>'}
+ for(var r=0;r<count;r++)for(var c=0;c<count;c++){if(!qr.isDark(r,c)||isEye(r,c,count))continue;var x=g.qrX+(c+m)*cell,y=g.qrY+(r+m)*cell;
+   if(state.moduleStyle==="dots")parts.push('<circle cx="'+(x+cell/2)+'" cy="'+(y+cell/2)+'" r="'+(cell*0.42)+'" fill="'+state.fg+'"/>');
+   else if(state.moduleStyle==="rounded")parts.push('<rect x="'+(x+cell*0.06)+'" y="'+(y+cell*0.06)+'" width="'+(cell*0.88)+'" height="'+(cell*0.88)+'" rx="'+(cell*0.32)+'" fill="'+state.fg+'"/>');
+   else parts.push('<rect x="'+x+'" y="'+y+'" width="'+(cell+0.3)+'" height="'+(cell+0.3)+'" fill="'+state.fg+'"/>');}
+ var ox=g.qrX+m*cell,oy=g.qrY+m*cell;
+ parts.push(eyeSVG(ox,oy));parts.push(eyeSVG(ox+(count-7)*cell,oy));parts.push(eyeSVG(ox,oy+(count-7)*cell));
+ /* frame shapes + frame text as real SVG elements */
+ var fg=state.fg,bg=state.bg,txt=escXml(frameTextValue()),qrBot=g.qrY+size;
+ function svgText(cy,zoneH,color){return '<text x="'+(W/2)+'" y="'+cy+'" font-family="Arial,sans-serif" font-size="'+frameFontPx(size,zoneH)+'" font-weight="bold" fill="'+color+'" text-anchor="middle" dominant-baseline="middle">'+txt+'</text>'}
+ switch(state.frame){
+  case "classic":{var lw=Math.max(3,size*0.011);parts.push('<rect x="'+(lw/2)+'" y="'+(lw/2)+'" width="'+(W-lw)+'" height="'+(H-lw)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw+'"/>');break}
+  case "double":{var lw2=Math.max(2,size*0.008),gap=size*0.022,in2=lw2+gap;parts.push('<rect x="'+(lw2/2)+'" y="'+(lw2/2)+'" width="'+(W-lw2)+'" height="'+(H-lw2)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw2+'"/><rect x="'+in2+'" y="'+in2+'" width="'+(W-in2*2)+'" height="'+(H-in2*2)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw2+'"/>');break}
+  case "rounded":{var lw3=Math.max(4,size*0.016);parts.push('<rect x="'+(lw3/2)+'" y="'+(lw3/2)+'" width="'+(W-lw3)+'" height="'+(H-lw3)+'" rx="'+(size*0.045)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw3+'"/>');break}
+  case "corners":{var L=size*0.10,lw4=Math.max(3,size*0.013),ix=Math.max(1,size*0.004);
+    [[ix,ix,1,1],[W-ix,ix,-1,1],[ix,H-ix,1,-1],[W-ix,H-ix,-1,-1]].forEach(function(cn){parts.push('<path d="M'+(cn[0]+cn[2]*L)+' '+cn[1]+' L'+cn[0]+' '+cn[1]+' L'+cn[0]+' '+(cn[1]+cn[3]*L)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw4+'"/>')});break}
+  case "banner-bottom":parts.push('<rect x="0" y="'+qrBot+'" width="'+W+'" height="'+g.B+'" fill="'+fg+'"/>'+svgText(qrBot+g.B/2,g.B,bg));break;
+  case "banner-top":parts.push('<rect x="0" y="0" width="'+W+'" height="'+g.T+'" fill="'+fg+'"/>'+svgText(g.T/2,g.T,bg));break;
+  case "label-bottom":parts.push('<rect x="1" y="'+(qrBot+1)+'" width="'+(W-2)+'" height="'+(g.B-2)+'" fill="'+bg+'" stroke="'+fg+'" stroke-width="'+Math.max(2,size*0.007)+'"/>'+svgText(qrBot+g.B/2,g.B,fg));break;
+  case "bubble":{var lw5=Math.max(3,size*0.011),botY=qrBot+g.P-lw5/2,cx=W/2,tw=size*0.035,tailH=g.B*0.34,tailY=qrBot+g.P-lw5/2;
+    parts.push('<rect x="'+(lw5/2)+'" y="'+(lw5/2)+'" width="'+(W-lw5)+'" height="'+(qrBot+g.P-lw5)+'" rx="'+(size*0.03)+'" fill="none" stroke="'+fg+'" stroke-width="'+lw5+'"/>');
+    parts.push('<polygon points="'+(cx-tw)+','+tailY+' '+(cx+tw)+','+tailY+' '+cx+','+(tailY+tailH)+'" fill="'+bg+'" stroke="'+fg+'" stroke-width="'+lw5+'"/>');
+    parts.push('<rect x="'+(cx-tw+lw5/2)+'" y="'+(tailY-lw5)+'" width="'+(tw*2-lw5)+'" height="'+(lw5*1.4)+'" fill="'+bg+'"/>');
+    parts.push(svgText(tailY+tailH+(H-tailY-tailH)/2,H-tailY-tailH,fg));break}
+  case "lines":{var lw6=Math.max(2,size*0.007),lx0=size*0.05,lx1=W-size*0.05,line2Y=qrBot+g.B*0.30;
+    parts.push('<rect x="'+lx0+'" y="'+(g.qrY-g.T*0.45)+'" width="'+(lx1-lx0)+'" height="'+lw6+'" fill="'+fg+'"/><rect x="'+lx0+'" y="'+line2Y+'" width="'+(lx1-lx0)+'" height="'+lw6+'" fill="'+fg+'"/>'+svgText(line2Y+(H-line2Y)/2,H-line2Y,fg));break}
+ }
+ if(state.logoData){var lw=size*0.22,cx2=g.qrX+size/2,cy2=g.qrY+size/2;parts.push('<rect x="'+(cx2-lw/2-size*0.025)+'" y="'+(cy2-lw/2-size*0.025)+'" width="'+(lw+size*0.05)+'" height="'+(lw+size*0.05)+'" rx="10" fill="#ffffff"/><image href="'+state.logoData+'" x="'+(cx2-lw/2)+'" y="'+(cy2-lw/2)+'" width="'+lw+'" height="'+lw+'" preserveAspectRatio="xMidYMid meet"/>')}
+ parts.push("</svg>");return parts.join("");
+}
+$("dlSvg").addEventListener("click",function(){if(!gateCheck())return;downloadBlob(new Blob([buildSVG()],{type:"image/svg+xml"}),baseName()+".svg");afterCreation("download");toast("SVG downloaded (true vector)")});
+
+function buildPDFBlob(done){
+ var cv=exportCanvas();
+ cv.toBlob(function(blob){
+   var fr=new FileReader();
+   fr.onload=function(){
+     var dataUrl=fr.result;var b64=dataUrl.split(",")[1];
+     var bin=atob(b64);var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+     var W=cv.width,H=cv.height;var pageW=595,pageH=595*(H/W);
+     var enc=new TextEncoder();
+     var chunks=[];var offsets=[];var pos=0;
+     function push(data){var arr=(typeof data==="string")?enc.encode(data):data;chunks.push(arr);pos+=arr.length}
+     function objStart(n){offsets[n]=pos}
+     push("%PDF-1.4\n");
+     objStart(1);push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+     objStart(2);push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+     objStart(3);push("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageW.toFixed(2)+" "+pageH.toFixed(2)+"] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n");
+     objStart(4);push("4 0 obj\n<< /Type /XObject /Subtype /Image /Width "+W+" /Height "+H+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+bytes.length+" >>\nstream\n");push(bytes);push("\nendstream\nendobj\n");
+     var content="q\n"+pageW.toFixed(2)+" 0 0 "+pageH.toFixed(2)+" 0 0 cm\n/Im1 Do\nQ\n";
+     objStart(5);push("5 0 obj\n<< /Length "+content.length+" >>\nstream\n"+content+"endstream\nendobj\n");
+     var xrefPos=pos;
+     var xref="xref\n0 6\n0000000000 65535 f \n";
+     for(var n=1;n<=5;n++){xref+=String(offsets[n]).padStart(10,"0")+" 00000 n \n"}
+     push(xref);push("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n"+xrefPos+"\n%%EOF\n");
+     var totalLen=chunks.reduce(function(s,c){return s+c.length},0);var out=new Uint8Array(totalLen);var o=0;chunks.forEach(function(c){out.set(c,o);o+=c.length});
+     done(new Blob([out],{type:"application/pdf"}));
+   };
+   fr.readAsDataURL(blob);
+ },"image/jpeg",0.95);
+}
+$("dlPdf").addEventListener("click",function(){if(!gateCheck())return;buildPDFBlob(function(b){downloadBlob(b,baseName()+".pdf");afterCreation("download");toast("PDF downloaded (one page, print-ready)")})});
+
+/* ============ Scanner (shared decode helpers) ============ */
+function loadJsQR(){
+ if(window.jsQR)return Promise.resolve(window.jsQR);
+ if(loadJsQR._p)return loadJsQR._p;
+ loadJsQR._p=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";s.onload=function(){window.jsQR?res(window.jsQR):rej(new Error("jsQR missing"))};s.onerror=function(){loadJsQR._p=null;rej(new Error("jsQR load failed"))};document.head.appendChild(s)});
+ return loadJsQR._p;
+}
+async function decodeImageFile(file){
+ var bmp=await createImageBitmap(file);
+ if("BarcodeDetector" in window){
+   try{var det=new BarcodeDetector({formats:["qr_code"]});var codes=await det.detect(bmp);if(codes&&codes.length)return codes[0].rawValue}catch(e){}
+ }
+ var cv=document.createElement("canvas");cv.width=bmp.width;cv.height=bmp.height;var cx=cv.getContext("2d");cx.drawImage(bmp,0,0);
+ var idata=cx.getImageData(0,0,cv.width,cv.height);
+ var lib=await loadJsQR();
+ var code=lib(idata.data,cv.width,cv.height);
+ return code?code.data:null;
+}
+function scanResultBox(text,withRecreate){
+ var box=document.createElement("div");box.className="scanresult";
+ var p=document.createElement("div");p.textContent=text;box.appendChild(p);
+ var row=document.createElement("div");row.style.marginTop="12px";row.style.display="flex";row.style.gap="8px";row.style.flexWrap="wrap";
+ var cp=document.createElement("button");cp.className="btn sm";cp.type="button";cp.textContent="Copy text";cp.addEventListener("click",function(){if(navigator.clipboard)navigator.clipboard.writeText(text);toast("Copied to clipboard")});row.appendChild(cp);
+ if(/^https?:\/\//i.test(text)){var op=document.createElement("a");op.className="btn ghost sm";op.href=text;op.target="_blank";op.rel="noopener";op.textContent="Open link";row.appendChild(op)}
+ if(withRecreate){var rc=document.createElement("button");rc.className="btn sm";rc.type="button";rc.textContent="↻ Recreate this QR";rc.addEventListener("click",function(){recreateFromText(text)});row.appendChild(rc)}
+ box.appendChild(row);return box;
+}
+function showScan(text){
+ var out=$("scanOut");
+ if(!text){out.innerHTML='<div class="scanresult">No QR code found in that image. Try a sharper, straight-on photo with good light.</div>';return}
+ out.innerHTML="";out.appendChild(scanResultBox(text,false));
+}
+async function scanFile(file){
+ if(!file)return;$("scanOut").innerHTML='<div class="scanresult">Scanning…</div>';
+ try{showScan(await decodeImageFile(file))}catch(e){showScan(null)}
+}
+$("scanInput").addEventListener("change",function(){scanFile(this.files&&this.files[0])});
+
+/* ============ Studio: Upload & Scan + Recreate ============ */
+function recreateTypeFor(text){return /^https?:\/\//i.test(String(text||"").trim())?"url":"text"}
+function recreateFromText(text){
+ if(CURRENT_PAGE!=="create"){studioIntent({kind:"recreate",text:text});location.href="/#studio";return}
+ applyRecreate(text);
+}
+function applyRecreate(text){
+ var target=recreateTypeFor(text);
+ selectType(target,false);
+ setTimeout(function(){
+   var form=document.querySelector('.typeform[data-type="'+target+'"]');
+   var el=form&&form.querySelector('[data-field="'+(target==="url"?"url":"text")+'"]');
+   if(el)el.value=text;
+   render();
+   goToStudio();
+   toast("Loaded into the studio — add your logo, style & frame, then download");
+ },30);
+}
+$("studioScanInput").addEventListener("change",async function(){
+ var file=this.files&&this.files[0];var out=$("studioScanOut");if(!file)return;
+ out.innerHTML='<div class="scanresult">Scanning…</div>';
+ try{
+   var text=await decodeImageFile(file);
+   if(!text){out.innerHTML='<div class="scanresult">No QR code found in that image. Try a sharper, straight-on photo with good light.</div>';return}
+   out.innerHTML="";out.appendChild(scanResultBox(text,true));
+ }catch(e){out.innerHTML='<div class="scanresult">Could not scan that image. If your browser has no built-in detector, the fallback decoder needs internet once — connect and try again.</div>'}
+});
+
+/* ============ Test scan (decode your own design) ============ */
+function renderQRCodeOnlyCanvas(size){
+ var saved=state.frame;state.frame="none";
+ var cv=document.createElement("canvas");
+ renderToCanvas(cv,currentPayload()||"https://example.com",size||720);
+ state.frame=saved;
+ return cv;
+}
+async function testScanCurrent(){
+ var out=$("testScanOut");
+ out.innerHTML='<div class="contrast">Decoding your preview…</div>';
+ var lib;
+ try{lib=await loadJsQR()}catch(e){lib=null}
+ if(!lib){out.innerHTML='<div class="contrast warn">⚠ The scan test needs internet the first time, to load the decoder (jsQR). Connect and try again — generating and downloading work offline as usual, and your QR is never uploaded.</div>';return}
+ var cv=renderQRCodeOnlyCanvas(720);
+ var cx=cv.getContext("2d");var idata;
+ try{idata=cx.getImageData(0,0,cv.width,cv.height)}catch(e){out.innerHTML='<div class="contrast warn">⚠ Could not read the preview canvas in this browser, so the test cannot run here. Test-scan the downloaded PNG with your phone instead.</div>';return}
+ var code=null;try{code=lib(idata.data,cv.width,cv.height)}catch(e){}
+ var payload=currentPayload();
+ if(code&&code.data===payload){
+   var shown=escHtml(code.data.slice(0,90))+(code.data.length>90?"…":"");
+   out.innerHTML='<div class="contrast pass">✓ <b>Scans correctly</b> — decoded: “'+shown+'”</div>';
+ }else if(code){
+   out.innerHTML='<div class="contrast warn">⚠ It decoded, but the result does not match your content exactly. Decoded: “'+escHtml(code.data.slice(0,90))+'”. Check the content fields, then test again.</div>';
+ }else{
+   out.innerHTML='<div class="contrast warn">⚠ <b>This design could not be decoded.</b> Heavily styled dot/rounded designs, low contrast or a large logo can defeat decoders — that is exactly what this test is for. Tips: raise contrast (aim for 4.5:1+), use error correction <b>H</b>, make the logo smaller or remove it, and try square modules for maximum reliability.</div>';
+ }
+}
+$("testScanBtn").addEventListener("click",testScanCurrent);
+
+/* ============ Bulk CSV ============ */
+function parseCSV(text){
+ var rows=[];var lines=String(text||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(function(l){return l.trim().length});
+ if(!lines.length)return rows;
+ function splitLine(line){var out=[];var cur="";var q=false;for(var i=0;i<line.length;i++){var ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}else{if(ch==='"')q=true;else if(ch===","){out.push(cur);cur=""}else cur+=ch}}out.push(cur);return out.map(function(x){return x.trim()})}
+ var head=splitLine(lines[0]).map(function(h){return h.toLowerCase()});
+ var ni=head.indexOf("name"),di=head.indexOf("destination");
+ if(ni<0)ni=0; if(di<0)di=1;
+ for(var i=1;i<lines.length&&rows.length<100;i++){var cells=splitLine(lines[i]);if(cells.length<2)continue;rows.push({name:cells[ni]||("QR "+i),destination:cells[di]||""})}
+ return rows;
+}
+var bulkRows=[];
+$("bulkInput").addEventListener("change",function(){
+ var file=this.files&&this.files[0];if(!file)return;var r=new FileReader();
+ r.onload=function(){bulkRows=parseCSV(r.result);
+   var html="<table><tr><th>#</th><th>Name</th><th>Destination</th></tr>"+bulkRows.map(function(x,i){return "<tr><td>"+(i+1)+"</td><td>"+x.name.replace(/</g,"&lt;")+"</td><td>"+x.destination.replace(/</g,"&lt;")+"</td></tr>"}).join("")+"</table>";
+   $("bulkPreview").innerHTML=bulkRows.length?("<p style='font-weight:700;margin-bottom:8px'>"+bulkRows.length+" row(s) ready.</p>"+html):"<p>No valid rows found. Check the headers are name,destination.</p>";
+ };r.readAsText(file);
+});
+function renderBulkCanvas(text,size){ /* bulk codes are always frameless, whatever the studio frame is */
+ var saved=state.frame;state.frame="none";var cv=document.createElement("canvas");renderToCanvas(cv,text,size);state.frame=saved;return cv;
+}
+$("bulkRender").addEventListener("click",function(){
+ var grid=$("bulkGrid");grid.innerHTML="";
+ if(!bulkRows.length){toast("Upload a CSV first");return}
+ bulkRows.forEach(function(row){var cell=document.createElement("div");cell.className="bulkcell";
+   var cv=renderBulkCanvas(row.destination||"https://example.com",360);cell.appendChild(cv);var d=document.createElement("div");d.textContent=row.name;cell.appendChild(d);grid.appendChild(cell);});
+ toast(bulkRows.length+" QR codes rendered");
+});
+$("bulkDownload").addEventListener("click",function(){
+ if(!bulkRows.length){toast("Upload a CSV first");return}
+ var gridCells=$("bulkGrid").querySelectorAll("canvas");
+ if(!gridCells.length){$("bulkRender").click();setTimeout(function(){$("bulkDownload").click()},300);return}
+ bulkRows.forEach(function(row,i){setTimeout(function(){var cv=renderBulkCanvas(row.destination||"https://example.com",1024);cv.toBlob(function(b){downloadBlob(b,"qrforge-bulk-"+slug(row.name)+".png")},"image/png")},i*350)});
+ toast("Downloading "+bulkRows.length+" PNGs one by one…");
+});
+
+/* ============ My Codes (localStorage) ============ */
+var LS_KEY="qrforge_codes_v1"; /* legacy (pre-accounts) guest key — migrated to the guest key on first run */
+var USERS_KEY="qrforge_users_v1",SESSION_KEY="qrforge_session_v1",GUEST_COUNT_KEY="qrforge_guest_created";
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch(e){return null}}
+function currentUserEmail(){var s=getSession();return s?s.email:""}
+function codesKey(){var e=currentUserEmail();return e?("qrforge_codes_v1_"+e):"qrforge_codes_v1_guest"}
+function loadCodes(){try{return JSON.parse(localStorage.getItem(codesKey())||"[]")}catch(e){return[]}}
+function storeCodes(c){localStorage.setItem(codesKey(),JSON.stringify(c))}
+function snapshot(name){
+ return {id:Date.now()+"",name:name||"Untitled QR",type:state.type,tracked:!!state.tracked,trackedId:state.trackedId||null,values:collectValues(),style:{moduleStyle:state.moduleStyle,eyeStyle:state.eyeStyle,fg:state.fg,bg:state.bg,eye:state.eye,ecc:state.ecc,margin:state.margin,size:state.size,frame:state.frame,frameText:state.frameText},payload:currentPayload(),savedAt:new Date().toISOString()};
+}
+$("saveBtn").addEventListener("click",function(){
+ if(!gateCheck())return;
+ var name=$("saveName").value.trim()||(TYPES[state.type].label+" QR");var codes=loadCodes();codes.unshift(snapshot(name));storeCodes(codes);$("saveName").value="";afterCreation("save");renderSaved();renderPanel();toast("Saved to My Codes (this browser)");
+});
+function renderSaved(){
+ var list=$("savedList");var codes=loadCodes().filter(function(x){return x.kind!=="tracked"});list.innerHTML="";
+ if(!codes.length){list.innerHTML='<div class="card" style="text-align:center">No saved codes yet. Design one above and press <b>Save</b>.</div>';return}
+ codes.forEach(function(item){
+   var d=document.createElement("div");d.className="saved-item";
+   var meta=document.createElement("div");meta.className="meta";var b=document.createElement("b");b.textContent=item.name;var s=document.createElement("small");s.textContent=(TYPES[item.type]?TYPES[item.type].label:item.type)+(item.tracked?" · Tracked":"")+" · "+new Date(item.savedAt).toLocaleString()+" · "+(item.payload||"").slice(0,60);meta.appendChild(b);meta.appendChild(s);d.appendChild(meta);
+   [["Load",function(){applySaved(item)}],["Duplicate",function(){var c=loadCodes();var copy=JSON.parse(JSON.stringify(item));copy.id=Date.now()+"";copy.name=item.name+" (copy)";c.unshift(copy);storeCodes(c);renderSaved()}],["Delete",function(){storeCodes(loadCodes().filter(function(x){return x.id!==item.id}));renderSaved();toast("Deleted")} ]].forEach(function(pair){var btn=document.createElement("button");btn.className="btn light sm";btn.textContent=pair[0];btn.addEventListener("click",pair[1]);d.appendChild(btn)});
+   list.appendChild(d);
+ });
+}
+function applySaved(item){
+ if(CURRENT_PAGE!=="create"){studioIntent({kind:"saved",item:item});location.href="/#studio";return}
+ applySavedItem(item);
+}
+function applySavedItem(item){
+ selectType(item.type,false);
+ setTimeout(function(){
+   var form=document.querySelector('.typeform[data-type="'+item.type+'"]');
+   if(form&&item.values){Object.keys(item.values).forEach(function(k){var el=form.querySelector('[data-field="'+k+'"]');if(el)el.value=item.values[k]})}
+   state.tracked=!!item.tracked;if(item.trackedId)state.trackedId=item.trackedId;var ttEl=$("trackedToggle");if(ttEl)ttEl.checked=state.tracked;
+   var st=item.style||{};state.moduleStyle=st.moduleStyle||"square";state.eyeStyle=st.eyeStyle||"square";state.fg=st.fg||"#111111";state.bg=st.bg||"#ffffff";state.eye=st.eye||"#111111";state.ecc=st.ecc||"M";state.margin=st.margin!=null?st.margin:4;state.size=st.size||1024;state.frame=st.frame||"none";state.frameText=st.frameText||"SCAN ME";
+   $("fgColor").value=state.fg;$("fgText").value=state.fg.toUpperCase();$("bgColor").value=state.bg;$("bgText").value=state.bg.toUpperCase();$("eyeColor").value=state.eye;$("eyeText").value=state.eye.toUpperCase();
+   $("eccSel").value=state.ecc;$("sizeSel").value=String(state.size);$("marginRange").value=state.margin;$("marginVal").textContent=state.margin;
+   [["moduleSeg",state.moduleStyle],["eyeSeg",state.eyeStyle]].forEach(function(pair){$(pair[0]).querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x.getAttribute("data-v")===pair[1])})});
+   syncFrameUI();
+   render();goToStudio();toast("Loaded: "+item.name);
+ },30);
+}
+
+
+/* ============ Accounts (local) + guest gate ============ */
+var GUEST_LIMIT=10;
+function loadUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||"[]")}catch(e){return[]}}
+function storeUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u))}
+/* Pure-JS SHA-256 — used ONLY where crypto.subtle is unavailable (e.g. non-secure contexts).
+   Where available, hashPassword uses crypto.subtle's SHA-256. Either way, passwords are
+   stored only as SHA-256 hashes, never as plain text. */
+function sha256Sync(str){
+ var ascii=unescape(encodeURIComponent(String(str)));
+ function rr(v,a){return (v>>>a)|(v<<(32-a))}
+ var mp=Math.pow,mw=mp(2,32),i,j,result="";
+ var words=[],ab=ascii.length*8;
+ var hash=sha256Sync.h=sha256Sync.h||[],k=sha256Sync.k=sha256Sync.k||[];
+ var pc=k.length,isC={};
+ for(var c=2;pc<64;c++){if(!isC[c]){for(i=0;i<313;i+=c)isC[i]=c;hash[pc]=(mp(c,.5)*mw)|0;k[pc++]=(mp(c,1/3)*mw)|0}}
+ ascii+="\x80";
+ while(ascii.length%64-56)ascii+="\x00";
+ for(i=0;i<ascii.length;i++){var jc=ascii.charCodeAt(i);words[i>>2]|=jc<<((3-i)%4)*8}
+ words[words.length]=((ab/mw)|0);words[words.length]=ab;
+ for(j=0;j<words.length;){
+  var w=words.slice(j,j+=16),oh=hash;hash=hash.slice(0,8);
+  for(i=0;i<64;i++){
+   var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];
+   var temp1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10))))|0;
+   var temp2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+   hash=[(temp1+temp2)|0].concat(hash);hash[4]=(hash[4]+temp1)|0;
+  }
+  for(i=0;i<8;i++)hash[i]=(hash[i]+oh[i])|0;
+ }
+ for(i=0;i<8;i++){for(j=3;j+1;j--){var b=(hash[i]>>(j*8))&255;result+=((b<16)?0:"")+b.toString(16)}}
+ return result;
+}
+async function hashPassword(pw){
+ pw=String(pw);
+ if(window.crypto&&crypto.subtle&&crypto.subtle.digest){
+  try{var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(pw));return Array.from(new Uint8Array(buf)).map(function(x){return x.toString(16).padStart(2,"0")}).join("")}catch(e){}
+ }
+ return sha256Sync(pw);
+}
+function setSession(email,name){localStorage.setItem(SESSION_KEY,JSON.stringify({email:email,name:name,signedInAt:new Date().toISOString()}))}
+function clearSession(){localStorage.removeItem(SESSION_KEY)}
+function isSignedIn(){return !!getSession()}
+function getGuestCreated(){var n=parseInt(localStorage.getItem(GUEST_COUNT_KEY)||"0",10);return isNaN(n)?0:n}
+function updateUsagePill(){var chip=$("usageChip");if(!chip)return;if(isSignedIn()){chip.innerHTML="Signed in — unlimited codes";chip.classList.add("account")}else{chip.innerHTML="Guest · "+getGuestCreated()+" of "+GUEST_LIMIT+" free codes used — <a href=\"/signup\">Sign up free</a> for unlimited";chip.classList.remove("account")}}
+function gateCheck(){if(isSignedIn())return true;if(getGuestCreated()<GUEST_LIMIT)return true;openAuth("signup","You've used your 10 free codes — create a free account to continue.");return false}
+function registerCreation(){if(!isSignedIn())localStorage.setItem(GUEST_COUNT_KEY,String(getGuestCreated()+1));updateUsagePill()}
+function afterCreation(kind){if(state.tracked&&isUrlFamily())ensureTrackedRecord();registerCreation();renderPanel()}
+function claimGuestCodes(){
+ if(!isSignedIn())return 0;
+ var guest=[];try{guest=JSON.parse(localStorage.getItem("qrforge_codes_v1_guest")||"[]")}catch(e){}
+ if(!guest.length)return 0;
+ var mine=loadCodes();var seen={};mine.forEach(function(x){seen[x.id]=1});
+ var moved=0;guest.forEach(function(x){if(!seen[x.id]){mine.push(x);moved++}});
+ storeCodes(mine);localStorage.setItem("qrforge_codes_v1_guest","[]");
+ if(moved)toast("Your "+moved+" guest code(s) were moved into your account");
+ return moved;
+}
+function renderAuthArea(){
+ var area=$("authArea");if(!area)return;var s=getSession();
+ if(s){
+  area.innerHTML="";
+  var chip=document.createElement("span");chip.className="userchip";chip.textContent="👤 "+s.name;area.appendChild(chip);
+  var out=document.createElement("button");out.className="btn light sm";out.type="button";out.id="signOutBtn";out.textContent="Sign Out";
+  out.addEventListener("click",function(){clearSession();renderAuthArea();updateUsagePill();renderSaved();renderPanel();toast("Signed out — you are browsing as a guest again")});
+  area.appendChild(out);
+ }else{
+  area.innerHTML='<button class="btn ghost sm" type="button" id="signInBtn">Sign In</button><button class="btn sm" type="button" id="signUpBtn">Sign Up</button>';
+  $("signInBtn").addEventListener("click",function(){location.href="/signin"});
+  $("signUpBtn").addEventListener("click",function(){location.href="/signup"});
+ }
+}
+var pendingAuthMsg="";
+function openAuth(mode,msg){
+ var target=(mode==="signup")?"signup":"signin";
+ if(msg){pendingAuthMsg=msg;try{sessionStorage.setItem("qrforge_auth_msg",msg)}catch(e){}}
+ if(CURRENT_PAGE===target){showAuthMsg(target)}
+ else{location.href=PAGE_PATHS[target]}
+}
+function showAuthTab(mode){openAuth(mode)}
+function showAuthMsg(page){
+ var el=$(page==="signup"?"signupMsg":"signinMsg");if(!el)return;
+ var m=pendingAuthMsg;
+ if(!m){try{m=sessionStorage.getItem("qrforge_auth_msg")||"";if(m)sessionStorage.removeItem("qrforge_auth_msg")}catch(e){m=""}}
+ if(m){el.textContent=m;el.style.display="block";pendingAuthMsg=""}
+}
+function authError(id,msg){var e=$(id);if(!e)return;e.textContent=msg||"";e.style.display=msg?"block":"none"}
+function finishAuth(user){
+ setSession(user.email,user.name);
+ claimGuestCodes();
+ renderAuthArea();updateUsagePill();renderSaved();renderPanel();
+ location.href="/my-panel";
+ toast("Welcome, "+user.name+" — account codes are unlimited");
+}
+$("signUpForm").addEventListener("submit",async function(ev){
+ ev.preventDefault();authError("suError","");
+ var name=$("suName").value.trim(),email=$("suEmail").value.trim().toLowerCase(),pass=$("suPass").value;
+ if(!name){authError("suError","Please add your name.");return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){authError("suError","That email does not look right.");return}
+ if(!pass||pass.length<6){authError("suError","Password needs at least 6 characters.");return}
+ var users=loadUsers();
+ if(users.some(function(u){return u.email===email})){authError("suError","An account with this email already exists on this device — use Sign In.");return}
+ var hash=await hashPassword(pass);
+ var user={name:name,email:email,passHash:hash,createdAt:new Date().toISOString()};
+ users.push(user);storeUsers(users);finishAuth(user);
+});
+$("signInForm").addEventListener("submit",async function(ev){
+ ev.preventDefault();authError("siError","");
+ var email=$("siEmail").value.trim().toLowerCase(),pass=$("siPass").value;
+ var users=loadUsers();var user=null;users.forEach(function(u){if(u.email===email)user=u});
+ if(!user){authError("siError","No account with this email on this device — use Sign Up.");return}
+ var hash=await hashPassword(pass);
+ if(hash!==user.passHash){authError("siError","Email or password is not correct.");return}
+ finishAuth(user);
+});
+function googleSignIn(){
+ var c=cfg();
+ if(c.supabaseUrl&&c.supabaseAnonKey){window.location.href=String(c.supabaseUrl).replace(/\/+$/,"")+"/auth/v1/authorize?provider=google&redirect_to="+encodeURIComponent(window.location.href.split("#")[0]);return}
+ ["googleNote","googleNoteUp"].forEach(function(id){var n=$(id);if(n)n.style.display="block"});
+}
+$("googleBtn").addEventListener("click",googleSignIn);
+var googleBtnUpEl=$("googleBtnUp");if(googleBtnUpEl)googleBtnUpEl.addEventListener("click",googleSignIn);
+
+/* ============ Tracked (dynamic) codes ============ */
+function updateTrackedUI(){
+ var wrap=$("trackedWrap");if(wrap)wrap.style.display=isUrlFamily()?"block":"none";
+ var on=state.tracked&&isUrlFamily();
+ var warn=$("trackedWarn");if(warn)warn.style.display=(on&&!cloudConnected())?"block":"none";
+ var ack=$("trackedAckWrap");if(ack)ack.style.display=(on&&!cloudConnected())?"flex":"none";
+ var box=$("trackedBox");if(box)box.classList.toggle("on",!!on);
+ updateDownloadGate();
+}
+function updateDownloadGate(){
+ var ackEl=$("trackedAck");
+ var blocked=state.tracked&&isUrlFamily()&&!cloudConnected()&&!(ackEl&&ackEl.checked);
+ ["dlPng","dlJpg","dlSvg","dlPdf"].forEach(function(id){var b=$(id);if(!b)return;b.disabled=!!blocked;b.title=blocked?"Tick “I understand — tracking starts after cloud connection” to download a tracked code while tracking is not connected yet.":""});
+}
+function ensureTrackedRecord(){
+ var id=getTrackedId();var dest=buildPayload(state.type,collectValues());
+ var codes=loadCodes();var found=null;codes.forEach(function(x){if(x.kind==="tracked"&&x.id===id)found=x});
+ var name=(($("trackedName")&&$("trackedName").value.trim())||((TYPES[state.type]?TYPES[state.type].label:state.type)+" tracked QR"));
+ if(found){found.destination=dest;found.name=name}
+ else{codes.unshift({kind:"tracked",id:id,name:name,destination:dest,createdAt:new Date().toISOString(),owner:currentUserEmail()||"guest",type:state.type})}
+ storeCodes(codes);
+ registerTrackedWithBackend(id,dest,name);
+ return id;
+}
+function registerTrackedWithBackend(id,dest,name){
+ var base=effectiveBackendBase();if(!base||typeof fetch!=="function")return;
+ try{fetch(base+"/api/register-code",{method:"POST",headers:{"Content-Type":"application/json","x-owner-email":currentUserEmail()||"guest"},body:JSON.stringify({id:id,destination:dest,name:name,owner:currentUserEmail()||"guest"})}).catch(function(){})}catch(e){}
+}
+$("trackedToggle").addEventListener("change",function(){state.tracked=this.checked;if(this.checked&&isUrlFamily())getTrackedId();render()});
+$("trackedAck").addEventListener("change",updateDownloadGate);
+
+/* ============ My Panel (tracked codes + scan stats) ============ */
+var statsById={};
+function ownerEmail(){return currentUserEmail()||"guest"}
+async function fetchMyStats(){
+ var base=effectiveBackendBase();if(!base||typeof fetch!=="function")return;
+ try{
+  var r=await fetch(base+"/api?owner="+encodeURIComponent(ownerEmail()),{headers:{"x-owner-email":ownerEmail()}});
+  if(!r||!r.ok)return;
+  var data=await r.json();statsById={};
+  (data.codes||[]).forEach(function(c){statsById[c.id]=c});
+  renderPanel();
+ }catch(e){}
+}
+function statsFor(rec){
+ var s=statsById[rec.id];
+ if(s)return {total:s.totalScans||0,week:s.last7Days||0,last:s.lastScan||null,platforms:s.platforms||{},top:s.topLocation||"",log:s.recentScans||[]};
+ return {total:0,week:0,last:null,platforms:{},top:"",log:[]};
+}
+function renderPanel(){
+ var list=$("panelList");if(!list)return;
+ var all=loadCodes();
+ var tracked=all.filter(function(x){return x.kind==="tracked"});
+ var banner=$("panelBanner");
+ if(banner){
+  if(!cloudConnected())banner.innerHTML='<div class="panel-banner">Scan tracking starts counting when the free cloud connection is switched on — codes you make now are already registered here.</div>';
+  else banner.innerHTML='<div class="panel-banner">Cloud tracking is connected — scans of your tracked codes are counted below.</div>';
+ }
+ var soEl=$("panelSignedOut");if(soEl)soEl.style.display=isSignedIn()?"none":"block";
+ var tot=0,week=0,topName="—",topN=-1;
+ tracked.forEach(function(rec){var st=statsFor(rec);tot+=st.total;week+=st.week;if(st.total>topN){topN=st.total;topName=rec.name}});
+ $("statMyCodes").textContent=all.length;
+ $("statTotalScans").textContent=tot;
+ $("statWeekScans").textContent=week;
+ $("statTopCode").textContent=tracked.length?topName:"—";
+ $("statTopCode").style.fontSize=tracked.length?"17px":"30px";
+ list.innerHTML="";
+ if(!tracked.length){list.innerHTML='<div class="card" style="text-align:center">No tracked codes yet. In the studio, pick a URL, PDF/Menu or Google Review code, turn on <b>Tracked QR (dynamic)</b> and download or save it — it will appear here.</div>';return}
+ tracked.forEach(function(rec){
+  var st=statsFor(rec);
+  var card=document.createElement("div");card.className="tcard";
+  var short=(effectiveBackendBase()||"https://tracking.qrforge.app")+"/r/"+rec.id;
+  var plats=["iOS","Android","Desktop","Other"];var pmax=Math.max(1,st.total);
+  var phtml=plats.map(function(p){var n=(st.platforms&&st.platforms[p])||0;return '<div class="pbar-row"><span>'+p+'</span><div class="pbar"><i style="width:'+Math.round(n/pmax*100)+'%"></i></div><b>'+n+'</b></div>'}).join("");
+  var logHtml=st.log.length?st.log.map(function(s){return '<tr><td>'+escHtml(new Date(s.ts).toLocaleString())+'</td><td>'+escHtml(s.platform||"")+'</td><td>'+escHtml(s.device||"")+'</td><td>'+escHtml((s.country||"Unknown")+(s.city&&s.city!=="Unknown"?", "+s.city:""))+'</td></tr>'}).join(""):'<tr><td colspan="4">No scans recorded yet.</td></tr>';
+  card.innerHTML='<h3>'+escHtml(rec.name)+'</h3>'
+   +'<div class="short">'+escHtml(short)+'</div>'
+   +'<div class="destrow"><input type="text" value="'+escXml(rec.destination)+'" data-dest="'+rec.id+'" aria-label="Destination URL"><button class="btn sm" type="button" data-update="'+rec.id+'">Update destination</button></div>'
+   +'<div class="hint">The printed code stays the same — only the destination changes, and the change goes live once the cloud connection is on.</div>'
+   +'<div class="tgrid"><div><b>Total scans:</b> '+st.total+'</div><div><b>Last scan:</b> '+(st.last?escHtml(new Date(st.last).toLocaleString()):"No scans yet")+'</div><div><b>Created:</b> '+escHtml(new Date(rec.createdAt).toLocaleString())+'</div><div><b>Top location:</b> '+(st.top?escHtml(st.top):"—")+'</div></div>'
+   +'<div style="margin-top:10px"><b style="font-size:13.5px">Scans by platform</b>'+phtml+'</div>'
+   +'<details class="scanlog"><summary>Scan log</summary><table><tr><th>Time</th><th>Platform</th><th>Device</th><th>Location</th></tr>'+logHtml+'</table></details>';
+  list.appendChild(card);
+ });
+}
+$("panelList").addEventListener("click",function(ev){
+ var btn=ev.target&&ev.target.closest?ev.target.closest("[data-update]"):null;if(!btn)return;
+ var id=btn.getAttribute("data-update");
+ var input=$("panelList").querySelector('[data-dest="'+id+'"]');
+ var codes=loadCodes();var rec=null;codes.forEach(function(x){if(x.kind==="tracked"&&x.id===id)rec=x});
+ if(!rec||!input)return;
+ rec.destination=input.value.trim();storeCodes(codes);
+ registerTrackedWithBackend(rec.id,rec.destination,rec.name);
+ toast("Destination updated — the printed code stays the same; the new destination goes live once the cloud connection is on");
+});
+
+/* ============ Chrome: menu, modals ============ */
+$("burger").addEventListener("click",function(){var m=$("mobileMenu");m.style.display=m.style.display==="block"?"none":"block"});
+document.querySelectorAll("[data-modal]").forEach(function(el){el.addEventListener("click",function(e){e.preventDefault();var m=$(el.getAttribute("data-modal"));if(m)m.classList.add("open")})});
+document.querySelectorAll("[data-close]").forEach(function(el){el.addEventListener("click",function(){el.closest(".modal").classList.remove("open")})});
+document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.remove("open")})});
+
+/* ============ Router (real pages, v5) ============ */
+var PAGES=["create","scan","bulk","codes","panel","signin","signup"];
+var PAGE_PATHS={create:"/",scan:"/scan",bulk:"/bulk",codes:"/my-codes",panel:"/my-panel",signin:"/signin",signup:"/signup"};
+var CURRENT_PAGE=window.QRFORGE_PAGE||"create";
+var LEGACY_HASH={top:"create",studio:"create",types:"create",features:"create",faq:"create",scanner:"scan",mycodes:"codes"};
+function currentPageName(){return CURRENT_PAGE}
+function applyRoute(){
+ document.querySelectorAll("[data-nav]").forEach(function(a){a.classList.toggle("active",a.getAttribute("data-nav")===CURRENT_PAGE)});
+ var mm=$("mobileMenu");if(mm)mm.style.display="none";
+ if(CURRENT_PAGE==="codes")renderSaved();
+ if(CURRENT_PAGE==="panel"){renderPanel();fetchMyStats()}
+ if(CURRENT_PAGE==="signin"||CURRENT_PAGE==="signup")showAuthMsg(CURRENT_PAGE);
+}
+function goToStudio(){
+ if(CURRENT_PAGE!=="create"){location.href="/#studio";return}
+ var s=$("studio");if(s)s.scrollIntoView({behavior:"smooth"});
+}
+/* Cross-page studio intent: Recreate / Load-saved / pick-a-type from another page
+   stash what the studio should open with; the home page consumes it on load. */
+function studioIntent(intent){try{sessionStorage.setItem("qrforge_studio_intent",JSON.stringify(intent))}catch(e){}}
+function consumeStudioIntent(){
+ var raw=null;try{raw=sessionStorage.getItem("qrforge_studio_intent");if(raw)sessionStorage.removeItem("qrforge_studio_intent")}catch(e){}
+ if(!raw)return;
+ var it=null;try{it=JSON.parse(raw)}catch(e){}
+ if(!it)return;
+ if(it.kind==="recreate"&&typeof it.text==="string")applyRecreate(it.text);
+ else if(it.kind==="saved"&&it.item)applySavedItem(it.item);
+ else if(it.kind==="type"&&it.type&&TYPES[it.type]){selectType(it.type,false);render()}
+}
+/* Legacy v4 hash links: an old bookmark like /#/panel or /#scanner lands on the
+   home page file and is forwarded to the matching real page here. The in-page
+   anchors #studio/#faq/#types/#features/#top keep working as plain anchors. */
+function legacyHashRedirect(){
+ if(CURRENT_PAGE!=="create")return false;
+ var h=String(location.hash||"");
+ if(h.indexOf("#/")===0){
+  var seg=h.replace(/^#\/?/,"").split("/")[0];
+  if(PAGES.indexOf(seg)>=0&&seg!=="create"){location.replace(PAGE_PATHS[seg]);return true}
+  return false;
+ }
+ var seg2=h.replace(/^#/,"");
+ if(seg2==="scanner"){location.replace("/scan");return true}
+ if(seg2==="mycodes"){location.replace("/my-codes");return true}
+ return false;
+}
+
+/* ============ Test hooks + init ============ */
+window.__qrforge={buildPayload:buildPayload,contrastRatio:contrastRatio,parseCSV:parseCSV,buildSVG:buildSVG,makeQR:makeQR,applyTemplate:applyTemplate,state:state,TYPES:TYPES,TEMPLATES:TEMPLATES,renderToCanvas:renderToCanvas,buildPDFBlob:buildPDFBlob,exportCanvas:exportCanvas,FRAMES:FRAMES,FRAME_TEXT_PRESETS:FRAME_TEXT_PRESETS,frameLayout:frameLayout,frameGeom:frameGeom,frameTextValue:frameTextValue,setFrame:setFrame,recreateTypeFor:recreateTypeFor,recreateFromText:recreateFromText,snapshot:snapshot,applySaved:applySaved,testScanCurrent:testScanCurrent,renderQRCodeOnlyCanvas:renderQRCodeOnlyCanvas,currentPayload:currentPayload,selectType:selectType,CONFIG:window.QRFORGE_CONFIG,effectiveBackendBase:effectiveBackendBase,cloudConnected:cloudConnected,getSession:getSession,loadUsers:loadUsers,hashPassword:hashPassword,sha256Sync:sha256Sync,gateCheck:gateCheck,getGuestCreated:getGuestCreated,registerCreation:registerCreation,openAuth:openAuth,showAuthTab:showAuthTab,claimGuestCodes:claimGuestCodes,loadCodes:loadCodes,storeCodes:storeCodes,codesKey:codesKey,updateUsagePill:updateUsagePill,isUrlFamily:isUrlFamily,trackedShortUrl:trackedShortUrl,getTrackedId:getTrackedId,ensureTrackedRecord:ensureTrackedRecord,renderPanel:renderPanel,renderSaved:renderSaved,renderAuthArea:renderAuthArea,updateDownloadGate:updateDownloadGate,fetchMyStats:fetchMyStats,applyRoute:applyRoute,currentPage:currentPageName,PAGES:PAGES,PAGE_PATHS:PAGE_PATHS,PAGE:CURRENT_PAGE,studioIntent:studioIntent,consumeStudioIntent:consumeStudioIntent,legacyHashRedirect:legacyHashRedirect,goToStudio:goToStudio,googleSignIn:googleSignIn,showAuthMsg:showAuthMsg};
+/* one-time migration: pre-accounts guest codes lived under the legacy key */
+try{if(localStorage.getItem(LS_KEY)&&!localStorage.getItem("qrforge_codes_v1_guest")){localStorage.setItem("qrforge_codes_v1_guest",localStorage.getItem(LS_KEY));localStorage.removeItem(LS_KEY)}}catch(e){}
+renderAuthArea();
+updateUsagePill();
+renderSaved();
+renderPanel();
+render();
+fetchMyStats();
+applyRoute();
+if(CURRENT_PAGE==="create"&&!legacyHashRedirect())consumeStudioIntent();
+})();
+</script>
+</body>
+</html>
